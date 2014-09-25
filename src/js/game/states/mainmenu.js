@@ -19,7 +19,7 @@ module.exports = function(game) {
     var multiPlayerButton = game.add.text(game.world.centerX, 500, 'multi player', style)
     multiPlayerButton.anchor.setTo(0.5, 0.5)
     multiPlayerButton.inputEnabled = true
-    singlePlayerButton.events.onInputDown.add(function() {
+    multiPlayerButton.events.onInputDown.add(function() {
 			game.state.start('multiplayermenu')
     })
 

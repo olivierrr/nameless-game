@@ -6,7 +6,8 @@ var states = {
 		preloader: require('./states/preloader.js'),
 		mainmenu: require('./states/mainmenu.js'),
 		singleplayermenu: require('./states/singleplayermenu.js'),
-		multiplayermenu: require('./states/multiplayermenu.js')
+		multiplayermenu: require('./states/multiplayermenu.js'),
+		settingsmenu: require('./states/settingsmenu.js')
   }
 
 var game = new Phaser.Game(properties.size.x, properties.size.y, Phaser.AUTO, 'game')
@@ -16,5 +17,6 @@ game.state.add('preloader', states.preloader(game))
 game.state.add('mainmenu', states.mainmenu(game))
 game.state.add('singleplayermenu', states.singleplayermenu(game))
 game.state.add('multiplayermenu', states.multiplayermenu(game))
+game.state.add('settingsmenu', states.settingsmenu(game))
 
 game.state.start('boot')

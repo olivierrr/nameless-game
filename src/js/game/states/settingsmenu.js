@@ -11,10 +11,6 @@ module.exports = function(game) {
     mainMenuButton.events.onInputDown.add(function() {
 			game.state.start('mainmenu')
     })
-
-    function backButtonAction() {
-    	game.state.start('mainmenu')
-    }
   }
 
   return gameState

@@ -21,3 +21,5 @@ body
   if (!productionBuild)
     script.
       document.write('<script src="//' + window.location.hostname + ':#{properties.liveReloadPort}/livereload.js"><\/script>');
+
+  script(src='https://cdnjs.cloudflare.com/ajax/libs/phaser/2.1.1/phaser.js')

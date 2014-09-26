@@ -14,13 +14,9 @@
   "license": "MIT",
   "browser": {
     "lodash": "./node_modules/lodash/dist/lodash.compat.js",
-    "Phaser": "./src/js/lib/phaser.arcade.js",
     "Stats": "./src/js/lib/stats.min.js"
   },
   "browserify-shim": {
-    "Phaser": {
-      "exports": "Phaser"
-    },
     "lodash": {
       "exports": "_"
     },
@@ -47,6 +43,7 @@
   },
   "dependencies": {
     "grunt-contrib-compress": "^0.9.1",
-    "lodash": "^2.4.1"
+    "lodash": "^2.4.1",
+    "phaser": "^2.1.1"
   }
 }

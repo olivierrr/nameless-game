@@ -19,43 +19,6 @@ module.exports = function(game) {
 
     var p1 = Ragdoll(game)
 
-    p1.children.forEach(function(part){
-      part.events.onInputDown.add(function(e) {
-        switch (e.body.sprite.name) {
-          case 'head'         : flex('neckJoint'); break
-          case 'upperLeftArm' : flex('leftShoulder'); break
-          case 'lowerLeftArm' : flex('leftElbowJoint'); break
-          case 'upperRightArm': flex('rightShoulder'); break
-          case 'lowerRightArm': flex('rightElbowJoint'); break
-          case 'upperLeftLeg' : flex('leftHipJoint'); break
-          case 'lowerLeftLeg' : flex('leftKneeJoint'); break
-          case 'upperRightLeg': flex('rightHipJoint'); break
-          case 'lowerRightLeg': flex('rightKneeJoint'); break
-          case 'pelvis'       : flex('spineJoint'); break
-        }
-      })
-    })
-
-    function flex(jointName) {
-      var joint = p1.joints[jointName]
-      joint.enableMotor()
-      if(joint.d === 1) {
-        joint.setMotorSpeed(5)
-        joint.d = 2
-      }
-      else {
-        joint.setMotorSpeed(-5)
-        joint.d = 1
-      }
-    }
-
-    var ui = game.add.group()
-
-    var healthbar = ui.create(50, 80, 'redsquare')
-    healthbar.width = 200
-    healthbar.height = 20
-
-
     window.game = game // debug
   }
 

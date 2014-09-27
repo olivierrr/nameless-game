@@ -2,191 +2,204 @@ module.exports = function(game) {
 
     var ragdoll = game.add.group()
 
-    var shouldersDistance = 0.5,
-        upperArmLength = 0.4,
-        lowerArmLength = 0.4,
-        upperArmSize = 0.2,
-        lowerArmSize = 0.2,
-        neckLength = 0.1,
-        headRadius = 0.25,
-        upperBodyLength = 0.6,
-        pelvisLength = 0.4,
-        upperLegLength = 0.5,
-        upperLegSize = 0.2,
-        lowerLegSize = 0.2,
-        lowerLegLength = 0.5;
-
-    var M = 100
-
+    var bodySprites = {}
+    var bodyJoints = {}
     var bodyParts = {}
+
+    // normalized scales
+    var sizes = {}
+    sizes.shouldersDistance = 0.5
+    sizes.upperArmLength = 0.4
+    sizes.lowerArmLength = 0.4
+    sizes.upperArmSize = 0.2
+    sizes.lowerArmSize = 0.2
+    sizes.neckLength = 0.1
+    sizes.headRadius = 0.25
+    sizes.upperBodyLength = 0.6
+    sizes.pelvisLength = 0.4
+    sizes.upperLegLength = 0.5
+    sizes.upperLegSize = 0.2
+    sizes.lowerLegSize = 0.2
+    sizes.lowerLegLength = 0.5
+
+    // scale multiplier
+    var M = 80
+
+    // apply scale multiplier
+    Object.keys(sizes).forEach(function(key) {
+        sizes[key] *= M
+    })
 
     // Lower legs
     bodyParts.lowerLeftLeg = {
-        x: -shouldersDistance / 2,
-        y: lowerLegLength / 2,
-        w: lowerLegSize * M,
-        h: lowerLegLength * M
+        x: -sizes.shouldersDistance / 2,
+        y: sizes.lowerLegLength / 2,
+        w: sizes.lowerLegSize,
+        h: sizes.lowerLegLength
     }
     bodyParts.lowerRightLeg = {
-        x: shouldersDistance / 2,
-        y: lowerLegLength / 2,
-        w: lowerLegSize * M,
-        h: lowerLegLength * M
+        x: sizes.shouldersDistance / 2,
+        y: sizes.lowerLegLength / 2,
+        w: sizes.lowerLegSize,
+        h: sizes.lowerLegLength
     }
     // Upper legs
     bodyParts.upperLeftLeg = {
-        x: -shouldersDistance / 2,
-        y: bodyParts.lowerLeftLeg.y + lowerLegLength / 2 + upperLegLength / 2,
-        w: upperLegSize * M,
-        h: upperLegLength * M
+        x: -sizes.shouldersDistance / 2,
+        y: bodyParts.lowerLeftLeg.y + sizes.lowerLegLength / 2 + sizes.upperLegLength / 2,
+        w: sizes.upperLegSize,
+        h: sizes.upperLegLength
     }
     bodyParts.upperRightLeg = {
-        x: shouldersDistance / 2,
-        y: bodyParts.lowerRightLeg.y + lowerLegLength / 2 + upperLegLength / 2,
-        w: upperLegSize * M,
-        h: upperLegLength * M
+        x: sizes.shouldersDistance / 2,
+        y: bodyParts.lowerRightLeg.y + sizes.lowerLegLength / 2 + sizes.upperLegLength / 2,
+        w: sizes.upperLegSize,
+        h: sizes.upperLegLength
     }
     // Pelvis
     bodyParts.pelvis = {
         x: 0,
-        y: bodyParts.upperLeftLeg.y + upperLegLength / 2 + pelvisLength / 2,
-        w: shouldersDistance * M,
-        h: pelvisLength * M
+        y: bodyParts.upperLeftLeg.y + sizes.upperLegLength / 2 + sizes.pelvisLength / 2,
+        w: sizes.shouldersDistance,
+        h: sizes.pelvisLength
     }
     // Upper body
     bodyParts.upperBody = {
         x: 0,
-        y: bodyParts.pelvis.y + pelvisLength / 2 + upperBodyLength / 2,
-        w: shouldersDistance * M,
-        h: upperBodyLength * M
+        y: bodyParts.pelvis.y + sizes.pelvisLength / 2 + sizes.upperBodyLength / 2,
+        w: sizes.shouldersDistance,
+        h: sizes.upperBodyLength
     }
     // Head
     bodyParts.head = {
         x: 0,
-        y: bodyParts.upperBody.y + upperBodyLength / 2 + headRadius + neckLength,
-        w: (headRadius * 2) * M,
-        h: (headRadius * 2) * M
+        y: bodyParts.upperBody.y + sizes.upperBodyLength / 2 + sizes.headRadius + sizes.neckLength,
+        w: sizes.headRadius * 2,
+        h: sizes.headRadius * 2
     }
     // Upper arms
     bodyParts.upperLeftArm = {
-        x: -shouldersDistance / 2 - upperArmLength / 2,
-        y: bodyParts.upperBody.y + upperBodyLength / 2,
-        w: upperArmLength * M,
-        h: upperArmSize * M
+        x: -sizes.shouldersDistance / 2 - sizes.upperArmLength / 2,
+        y: bodyParts.upperBody.y + sizes.upperBodyLength / 2,
+        w: sizes.upperArmLength,
+        h: sizes.upperArmSize
     }
     bodyParts.upperRightArm = {
-        x: shouldersDistance / 2 + upperArmLength / 2,
-        y: bodyParts.upperBody.y + upperBodyLength / 2,
-        w: upperArmLength * M,
-        h: upperArmSize * M
+        x: sizes.shouldersDistance / 2 + sizes.upperArmLength / 2,
+        y: bodyParts.upperBody.y + sizes.upperBodyLength / 2,
+        w: sizes.upperArmLength,
+        h: sizes.upperArmSize
     }
     // lower arms
     bodyParts.lowerLeftArm = {
-        x: bodyParts.upperLeftArm.x - lowerArmLength / 2 - upperArmLength / 2,
+        x: bodyParts.upperLeftArm.x - sizes.lowerArmLength / 2 - sizes.upperArmLength / 2,
         y: bodyParts.upperLeftArm.y,
-        w: lowerArmLength * M,
-        h: lowerArmSize * M
+        w: sizes.lowerArmLength,
+        h: sizes.lowerArmSize
     }
     bodyParts.lowerRightArm = {
-        x: bodyParts.upperRightArm.x + lowerArmLength / 2 + upperArmLength / 2,
+        x: bodyParts.upperRightArm.x + sizes.lowerArmLength / 2 + sizes.upperArmLength / 2,
         y: bodyParts.upperRightArm.y,
-        w: lowerArmLength * M,
-        h: lowerArmSize * M
+        w: sizes.lowerArmLength,
+        h: sizes.lowerArmSize
     }
-
-    var bodySprites = {}
-
-    Object.keys(bodyParts).forEach(function(key) {
-        var part = ragdoll.create(bodyParts[key].x+200, bodyParts[key].y+200, 'redsquare')
-        part.width = bodyParts[key].h
-        part.height = bodyParts[key].w
-        game.physics.p2.enable(part)
-        bodySprites[key] = part
-    })
-
-    var bodyJoints = {}
-
-        // Neck joint
+    // Neck joint
     bodyJoints.neckJoint = {
         a: 'head',
         b: 'upperBody',
-        pivot_a: [0, -headRadius - neckLength / 2],
-        pivot_b: [0, upperBodyLength / 2]
+        pivot_a: [0, -sizes.headRadius - sizes.neckLength / 2],
+        pivot_b: [0, sizes.upperBodyLength / 2]
     }
     // Knee joints
     bodyJoints.leftKneeJoint = {
         a: 'lowerLeftLeg',
         b: 'upperLeftLeg',
-        pivot_a: [0, lowerLegLength / 2],
-        pivot_b: [0, -upperLegLength / 2]
+        pivot_a: [0, sizes.lowerLegLength / 2],
+        pivot_b: [0, -sizes.upperLegLength / 2]
     }
     bodyJoints.rightKneeJoint = {
         a: 'lowerRightLeg',
         b: 'upperRightLeg',
-        pivot_a: [0, lowerLegLength / 2],
-        pivot_b: [0, -upperLegLength / 2]
+        pivot_a: [0, sizes.lowerLegLength / 2],
+        pivot_b: [0, -sizes.upperLegLength / 2]
     }
     // Hip joints
     bodyJoints.leftHipJoint = {
         a: 'upperLeftLeg',
         b: 'pelvis',
-        pivot_a: [0, upperLegLength / 2],
-        pivot_b: [-shouldersDistance / 2, -pelvisLength / 2]
+        pivot_a: [0, sizes.upperLegLength / 2],
+        pivot_b: [-sizes.shouldersDistance / 2, -sizes.pelvisLength / 2]
     }
     bodyJoints.rightHipJoint = {
         a: 'upperRightLeg',
         b: 'pelvis',
-        pivot_a: [0, upperLegLength / 2],
-        pivot_b: [shouldersDistance / 2, -pelvisLength / 2]
+        pivot_a: [0, sizes.upperLegLength / 2],
+        pivot_b: [sizes.shouldersDistance / 2, -sizes.pelvisLength / 2]
     }
     // Spine
     bodyJoints.spineJoint = {
         a: 'pelvis',
         b: 'upperBody',
-        pivot_a: [0, pelvisLength / 2],
-        pivot_b: [0, -upperBodyLength / 2]
+        pivot_a: [0, sizes.pelvisLength / 2],
+        pivot_b: [0, -sizes.upperBodyLength / 2]
     }
     // Shoulders
     bodyJoints.leftShoulder = {
         a: 'upperBody',
         b: 'upperLeftArm',
-        pivot_a: [-shouldersDistance / 2, upperBodyLength / 2],
-        pivot_b: [upperArmLength / 2, 0]
+        pivot_a: [-sizes.shouldersDistance / 2, sizes.upperBodyLength / 2],
+        pivot_b: [sizes.upperArmLength / 2, 0]
     }
     bodyJoints.rightShoulder = {
         a: 'upperBody',
         b: 'upperRightArm',
-        pivot_a: [shouldersDistance / 2, upperBodyLength / 2],
-        pivot_b: [-upperArmLength / 2, 0]
+        pivot_a: [sizes.shouldersDistance / 2, sizes.upperBodyLength / 2],
+        pivot_b: [-sizes.upperArmLength / 2, 0]
     }
     // Elbow joint
     bodyJoints.leftElbowJoint = {
         a: 'lowerLeftArm',
         b: 'upperLeftArm',
-        pivot_a: [lowerArmLength / 2, 0],
-        pivot_b: [-upperArmLength / 2, 0]
+        pivot_a: [sizes.lowerArmLength / 2, 0],
+        pivot_b: [-sizes.upperArmLength / 2, 0]
     }
     bodyJoints.rightElbowJoint = {
         a: 'lowerRightArm',
         b: 'upperRightArm',
-        pivot_a: [-lowerArmLength / 2, 0],
-        pivot_b: [upperArmLength / 2, 0]
+        pivot_a: [-sizes.lowerArmLength / 2, 0],
+        pivot_b: [sizes.upperArmLength / 2, 0]
     }
 
+    Object.keys(bodyParts).forEach(function(key) {
+
+        var x = bodyParts[key].x
+        var y = bodyParts[key].y
+        var w = bodyParts[key].w
+        var h = bodyParts[key].h
+
+        var part = ragdoll.create(x, y, 'redsquare')
+        part.width = w
+        part.height = h
+
+        game.physics.p2.enable(part)
+        bodySprites[key] = part
+    })
+
+
     Object.keys(bodyJoints).forEach(function(key) {
+
         var joint = bodyJoints[key]
         joint = game.physics.p2.createRevoluteConstraint
         (
             bodySprites[joint.a], 
-            joint.pivot_a.map(function(x){return x*M}).reverse(), 
+            joint.pivot_a, 
             bodySprites[joint.b], 
-            joint.pivot_b.map(function(x){return x*M}).reverse(), 
-            300
+            joint.pivot_b, 
+            200
         )
 
         joint.setLimits(-Math.PI/8, Math.PI/8)
     })
 
     return ragdoll
-
 }

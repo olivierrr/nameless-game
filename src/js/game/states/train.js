@@ -1,4 +1,4 @@
-var RAGDOLL = require('../Ragdoll.js')
+var Ragdoll = require('../Ragdoll.js')
 
 module.exports = function(game) {
 
@@ -17,8 +17,7 @@ module.exports = function(game) {
     game.physics.startSystem(Phaser.Physics.P2JS)
     game.physics.p2.gravity.y = 200
 
-    var ragdolls = game.physics.p2.createCollisionGroup()
-    var p1 = RAGDOLL(game)
+    var p1 = Ragdoll(game)
   }
 
   return gameState

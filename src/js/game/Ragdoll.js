@@ -97,7 +97,7 @@ module.exports = function(game) {
     var bodySprites = {}
 
     Object.keys(bodyParts).forEach(function(key) {
-        var part = ragdoll.create(bodyParts[key].x, bodyParts[key].y, 'redsquare')
+        var part = ragdoll.create(bodyParts[key].x+200, bodyParts[key].y+200, 'redsquare')
         part.width = bodyParts[key].h
         part.height = bodyParts[key].w
         game.physics.p2.enable(part)
@@ -175,7 +175,16 @@ module.exports = function(game) {
 
     Object.keys(bodyJoints).forEach(function(key) {
         var joint = bodyJoints[key]
-        game.physics.p2.createRevoluteConstraint(bodySprites[joint.a], joint.pivot_a, bodySprites[joint.b], joint.pivot_b, 500)
+        joint = game.physics.p2.createRevoluteConstraint
+        (
+            bodySprites[joint.a], 
+            joint.pivot_a.map(function(x){return x*M}).reverse(), 
+            bodySprites[joint.b], 
+            joint.pivot_b.map(function(x){return x*M}).reverse(), 
+            300
+        )
+
+        joint.setLimits(-Math.PI/8, Math.PI/8)
     })
 
     return ragdoll

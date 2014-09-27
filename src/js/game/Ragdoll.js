@@ -23,7 +23,7 @@ module.exports = function(game) {
     sizes.lowerLegLength = 0.5
 
     // scale multiplier
-    var M = 80
+    var M = 100
 
     // apply scale multiplier
     Object.keys(sizes).forEach(function(key) {
@@ -181,6 +181,9 @@ module.exports = function(game) {
         part.width = w
         part.height = h
 
+        part.inputEnabled = true
+        part.name = key
+
         game.physics.p2.enable(part)
         bodySprites[key] = part
     })
@@ -190,16 +193,23 @@ module.exports = function(game) {
 
         var joint = bodyJoints[key]
         joint = game.physics.p2.createRevoluteConstraint
-        (
-            bodySprites[joint.a], 
-            joint.pivot_a, 
-            bodySprites[joint.b], 
-            joint.pivot_b, 
-            200
-        )
+            (
+                bodySprites[joint.a], 
+                joint.pivot_a, 
+                bodySprites[joint.b], 
+                joint.pivot_b, 
+                800
+            )
 
-        joint.setLimits(-Math.PI/8, Math.PI/8)
+        joint.setLimits(-Math.PI/5, Math.PI/5)
+
+        if(!ragdoll.joints) ragdoll.joints = {}
+
+        ragdoll.joints[key] = joint
     })
 
+    ragdoll.health = 100
+
     return ragdoll
+
 }

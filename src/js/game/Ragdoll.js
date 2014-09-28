@@ -240,24 +240,29 @@ module.exports = function(game) {
   /**
    * attach click events
    */
-  ragdoll.children.forEach(function(part){
-    part.inputEnabled = true
-    part.events.onInputDown.add(function(e) {
-      switch (e.body.sprite.name) {
-        case 'head'         : ragdoll.flex('neckJoint')      ;break
-        case 'upperLeftArm' : ragdoll.flex('leftShoulder')   ;break
-        case 'lowerLeftArm' : ragdoll.flex('leftElbowJoint') ;break
-        case 'upperRightArm': ragdoll.flex('rightShoulder')  ;break
-        case 'lowerRightArm': ragdoll.flex('rightElbowJoint');break
-        case 'upperLeftLeg' : ragdoll.flex('leftHipJoint')   ;break
-        case 'lowerLeftLeg' : ragdoll.flex('leftKneeJoint')  ;break
-        case 'upperRightLeg': ragdoll.flex('rightHipJoint')  ;break
-        case 'lowerRightLeg': ragdoll.flex('rightKneeJoint') ;break
-        case 'pelvis'       : ragdoll.flex('spineJoint')     ;break
-        case 'upperBody'    : ragdoll.flex('spineJoint')     ;break
-      }
+  function clickEvents (sprites) {
+    sprites.children.forEach(function(part){
+      part.inputEnabled = true
+      part.events.onInputDown.add(function(e) {
+
+        switch (e.name) {
+          case 'head'         : ragdoll.newMove({type:'expand', jointName: 'neckJoint'})      ;break
+          case 'upperLeftArm' : ragdoll.newMove({type:'expand', jointName: 'leftShoulder'})   ;break
+          case 'lowerLeftArm' : ragdoll.newMove({type:'expand', jointName: 'leftElbowJoint'}) ;break
+          case 'upperRightArm': ragdoll.newMove({type:'expand', jointName: 'rightShoulder'})  ;break
+          case 'lowerRightArm': ragdoll.newMove({type:'expand', jointName: 'rightElbowJoint'});break
+          case 'upperLeftLeg' : ragdoll.newMove({type:'expand', jointName: 'leftHipJoint'})   ;break
+          case 'lowerLeftLeg' : ragdoll.newMove({type:'expand', jointName: 'leftKneeJoint'})  ;break
+          case 'upperRightLeg': ragdoll.newMove({type:'expand', jointName: 'rightHipJoint'})  ;break
+          case 'lowerRightLeg': ragdoll.newMove({type:'expand', jointName: 'rightKneeJoint'}) ;break
+          case 'pelvis'       : ragdoll.newMove({type:'expand', jointName: 'spineJoint'})     ;break
+          case 'upperBody'    : ragdoll.newMove({type:'expand', jointName: 'spineJoint'})     ;break
+        }
+      })
     })
-  })
+  }
+
+  clickEvents(ragdoll)
 
   /**
    * @property {Array} moveHistory
@@ -277,16 +282,10 @@ module.exports = function(game) {
    */
   ragdoll.flex = function(jointName) {
     var _this = this
+
     var joint = _this.joints[jointName]
     joint.enableMotor()
-    if(joint.d === 1) {
-      joint.setMotorSpeed(3)
-      joint.d = 2
-    }
-    else {
-      joint.setMotorSpeed(-3)
-      joint.d = 1
-    }
+    joint.setMotorSpeed(3)
   }
 
   /**
@@ -318,7 +317,7 @@ module.exports = function(game) {
    * @method clone
    * @return {PhaserGroup} a copy of ragdoll
    */
-  ragdoll.clone = function() {
+  ragdoll.clone = function () {
     var ragdollClone = game.add.group()
     var parts = this.children.forEach(function(part) {
       var clone = ragdollClone.create(part.position.x, part.position.y, part.key)
@@ -327,39 +326,66 @@ module.exports = function(game) {
       clone.rotation = part.rotation
       clone.anchor.x = part.anchor.x
       clone.anchor.y = part.anchor.y
+      clone.name = part.name
     })
     return ragdollClone
+  }
+
+  /**
+   * register a new move to latest turn
+   *
+   * @method newMove
+   * @param {Object} move
+   */
+  ragdoll.newMove = function (move) {
+    var _this = this
+
+    _this.moveHistory[_this.moveHistory.length-1][move.jointName] = move.type
   }
 
   /**
    * move ragdoll
    *
    * @method executeMove
-   * @param {Object} move
+   * @param {String} jointName
+   * @param {String} type
    */
-  ragdoll.executeMove = function (move) {
+  ragdoll.executeMove = function (jointName, type) {
     var _this = this
 
-    _this.moveHistory.push(move)
-
-    switch (move.type) {
-      case 'expand'  : _this.flex(move.jointName)  ;break 
-      case 'contract': _this.flex(move.jointName)  ;break 
-      case 'relax'   : _this.relax(move.jointName) ;break 
-      case 'tense'   : _this.tense(move.jointName) ;break 
+    switch (type) {
+      case 'expand'  : _this.flex(jointName)  ;break 
+      case 'contract': _this.flex(jointName)  ;break 
+      case 'relax'   : _this.relax(jointName) ;break 
+      case 'tense'   : _this.tense(jointName) ;break 
     }
   }
 
   /**
-   * move ragdoll
+   * a turn is an array of moves
    *
    * @method executeMoves
-   * @param {Array} moves
+   * @param {Array} turn
    */
-  ragdoll.executeMoves = function (moves) {
+  ragdoll.executeMoves = function (turn) {
     var _this = this
 
-    moves.forEach(_this.executeMove)
+    Object.keys(turn).forEach(function (jointName) {
+      _this.executeMove(jointName, turn[jointName])
+    })
+
+  }
+
+  /**
+   * pushes an empty Object to moveHistory
+   * ragdoll.newMove will push moves to newly pushed Object
+   *
+   * @method newTurn
+   */
+  ragdoll.newTurn = function () {
+    var _this = this
+
+    _this.moveHistory.push({})
   }
 
   /**
@@ -374,10 +400,12 @@ module.exports = function(game) {
 
     _this.shadowClone = _this.clone()
     _this.shadowClone.alpha = 0.5
+
+    clickEvents( _this.shadowClone )
   }
 
   /**
-   * save current position to position history
+   * save current position and velocity
    * 
    * @method savePosition
    */
@@ -385,10 +413,14 @@ module.exports = function(game) {
     var _this = this
 
     var pos = _this.children.map(function(part) {
+      var data = part.body.data
       return {
-        x: part.body.data.position[0], 
-        y: part.body.data.position[1],
-        angle: part.body.data.angle
+        x: data.position[0], 
+        y: data.position[1],
+        vx: data.velocity[0],
+        vy: data.velocity[1],
+        angle: data.angle,
+        angularVelocity: data.angularVelocity
       }
     })
     _this.positionHistory.push(pos)
@@ -404,9 +436,13 @@ module.exports = function(game) {
 
     var pos = _this.positionHistory[_this.positionHistory.length-1]
     _this.children.forEach(function(part, i) {
-      part.body.data.position[0] = pos[i].x
-      part.body.data.position[1] = pos[i].y
-      part.body.data.angle = pos[i].angle
+      var data = part.body.data
+      data.position[0] = pos[i].x
+      data.position[1] = pos[i].y
+      data.angle = pos[i].angle,
+      data.angularVelocity = pos[i].angularVelocity,
+      data.velocity[0] = pos[i].vx,
+      data.velocity[1] = pos[i].vy
     })
   }
 

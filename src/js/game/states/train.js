@@ -34,6 +34,7 @@ module.exports = function(game) {
 
     if(frameCount === 100) {
       frameCount = 0
+      p1.shadow()
       p1.relaxAll()
     }
 

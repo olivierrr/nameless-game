@@ -191,7 +191,7 @@ module.exports = function(game) {
 
   //
 
-  var ragdoll = game.add.group()
+  var ragdoll = game.add.group(null, null, 'ragdoll')
 
   /**
    * create muscles
@@ -263,6 +263,11 @@ module.exports = function(game) {
    * @property {Array} moveHistory
    */
   ragdoll.moveHistory = []
+
+  /**
+   * @property {Array} positionHistory
+   */
+   ragdoll.positionHistory = []
 
   /**
    * enable joint motor
@@ -337,11 +342,52 @@ module.exports = function(game) {
     _this.moveHistory.push(move)
 
     switch (move.type) {
-      case 'expand'  : _this.flex(move.jointName) ;break 
-      case 'contract': _this.flex(move.jointName) ;break 
+      case 'expand'  : _this.flex(move.jointName)  ;break 
+      case 'contract': _this.flex(move.jointName)  ;break 
       case 'relax'   : _this.relax(move.jointName) ;break 
       case 'tense'   : _this.tense(move.jointName) ;break 
     }
+  }
+
+  /**
+   * singleton clone
+   *
+   * @method shadow
+   */
+  ragdoll.shadow = function () {
+    var _this = this
+
+    if(_this.shadowClone) _this.shadowClone.destroy(true)
+
+    _this.shadowClone = _this.clone()
+    _this.shadowClone.alpha = 0.5
+  }
+
+  /**
+   * save current position to position history
+   * 
+   * @method savePosition
+   */
+  ragdoll.savePosition = function () {
+    var _this = this
+    var pos = _this.children.map(function(part, i) {
+      return [part.body.data.position[0], part.body.data.position[1]]
+    })
+    _this.positionHistory.push(pos)
+  }
+
+  /**
+   * mode ragdoll to last position on postision history
+   * 
+   * @method loadPosition
+   */
+  ragdoll.loadPosition = function () {
+    var _this = this
+    var pos = _this.positionHistory[_this.positionHistory.length-1]
+    _this.children.forEach(function(part, i) {
+      part.body.data.position[0] = pos[i][0]
+      part.body.data.position[1] = pos[i][1]
+    })
   }
 
   return ragdoll

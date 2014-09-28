@@ -4,6 +4,8 @@ module.exports = function(game) {
 
   var gameState = {}
 
+  var p1
+
   gameState.create = function () {
 
   	var style = { font: '40px Arial', fill: '#ffffff', align: 'center'}
@@ -17,13 +19,27 @@ module.exports = function(game) {
     game.physics.startSystem(Phaser.Physics.P2JS)
     game.physics.p2.gravity.y = 300
 
-    var p1 = Ragdoll(game)
+    p1 = Ragdoll(game)
 
-    window.game = game // debug
+    // debug
+    window.game = game 
+    window.o = p1
   }
+
+  var frameCount = 0 //
 
   gameState.update = function () {
 
+    if(game.paused === false) frameCount++
+
+    if(frameCount === 100) {
+      frameCount = 0
+      p1.relaxAll()
+    }
+
+    if(game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)) {
+      console.log('spacebar')
+    }
   }
 
   return gameState

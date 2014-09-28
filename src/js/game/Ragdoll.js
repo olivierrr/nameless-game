@@ -1,6 +1,7 @@
 module.exports = function(game) {
 
-  var FORCE = 1000
+  var FORCE = 10000
+  var M = 100 // scale
 
   var ragdoll = game.add.group()
 
@@ -16,7 +17,7 @@ module.exports = function(game) {
   sizes.upperArmSize = 0.2
   sizes.lowerArmSize = 0.2
   sizes.neckLength = 0.1
-  sizes.headRadius = 0.2
+  sizes.headRadius = 0.15
   sizes.upperBodyLength = 0.6
   sizes.pelvisLength = 0.4
   sizes.upperLegLength = 0.6
@@ -24,8 +25,7 @@ module.exports = function(game) {
   sizes.lowerLegSize = 0.2
   sizes.lowerLegLength = 0.5
 
-  // scale multiplier
-  var M = 100
+
 
   // apply scale multiplier
   Object.keys(sizes).forEach(function(key) {
@@ -145,17 +145,17 @@ module.exports = function(game) {
     b: 'pelvis',
     pivot_a: [0, sizes.upperLegLength / 2],
     pivot_b: [-sizes.shouldersDistance / 2, -sizes.pelvisLength / 2],
-    limits: [-Math.PI/3, Math.PI/3]
+    limits: [-Math.PI/6, Math.PI/3]
   }
-    bodyJoints.rightHipJoint = {
+  bodyJoints.rightHipJoint = {
     a: 'upperRightLeg',
     b: 'pelvis',
     pivot_a: [0, sizes.upperLegLength / 2],
     pivot_b: [sizes.shouldersDistance / 2, -sizes.pelvisLength / 2],
-    limits: [-Math.PI/3, Math.PI/3]
+    limits: [-Math.PI/3, Math.PI/6]
   }
     // Spine
-    bodyJoints.spineJoint = {
+  bodyJoints.spineJoint = {
     a: 'pelvis',
     b: 'upperBody',
     pivot_a: [0, sizes.pelvisLength / 2],
@@ -163,14 +163,14 @@ module.exports = function(game) {
     limits: [-Math.PI/5, Math.PI/5]
   }
     // Shoulders
-    bodyJoints.leftShoulder = {
+  bodyJoints.leftShoulder = {
     a: 'upperBody',
     b: 'upperLeftArm',
     pivot_a: [-sizes.shouldersDistance / 2, sizes.upperBodyLength / 2],
     pivot_b: [sizes.upperArmLength / 2, 0],
     limits: [-Math.PI/2, Math.PI/2]
   }
-    bodyJoints.rightShoulder = {
+  bodyJoints.rightShoulder = {
     a: 'upperBody',
     b: 'upperRightArm',
     pivot_a: [sizes.shouldersDistance / 2, sizes.upperBodyLength / 2],
@@ -178,14 +178,14 @@ module.exports = function(game) {
     limits: [-Math.PI/2, Math.PI/2]
   }
     // Elbows
-    bodyJoints.leftElbowJoint = {
+  bodyJoints.leftElbowJoint = {
     a: 'lowerLeftArm',
     b: 'upperLeftArm',
     pivot_a: [sizes.lowerArmLength / 2, 0],
     pivot_b: [-sizes.upperArmLength / 2, 0],
     limits: [-Math.PI/4, Math.PI/4]
   }
-    bodyJoints.rightElbowJoint = {
+  bodyJoints.rightElbowJoint = {
     a: 'lowerRightArm',
     b: 'upperRightArm',
     pivot_a: [-sizes.lowerArmLength / 2, 0],
@@ -193,7 +193,7 @@ module.exports = function(game) {
     limits: [-Math.PI/4, Math.PI/4]
   }
 
-   Object.keys(bodyParts).forEach(function(key) {
+  Object.keys(bodyParts).forEach(function(key) {
 
     var x = bodyParts[key].x
     var y = bodyParts[key].y
@@ -233,6 +233,7 @@ module.exports = function(game) {
   })
 
   ragdoll.children.forEach(function(part){
+
     part.inputEnabled = true
     part.events.onInputDown.add(function(e) {
       switch (e.body.sprite.name) {
@@ -251,17 +252,31 @@ module.exports = function(game) {
     })
   })
 
+  // temp 
+
   function flex(jointName) {
     var joint = ragdoll.joints[jointName]
     joint.enableMotor()
     if(joint.d === 1) {
-      joint.setMotorSpeed(5)
+      joint.setMotorSpeed(3)
       joint.d = 2
     }
     else {
-      joint.setMotorSpeed(-5)
+      joint.setMotorSpeed(-3)
       joint.d = 1
     }
+  }
+
+  function relax(jointName) {
+    var joint = ragdoll.joints[jointName]
+    joint.disableMotor()
+  }
+
+  ragdoll.relaxAll = function() {
+    var joints = this.joints
+    Object.keys(joints).forEach(function(joint) {
+      relax(joint)
+    })
   }
 
   return ragdoll

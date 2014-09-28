@@ -260,6 +260,11 @@ module.exports = function(game) {
   })
 
   /**
+   * @property {Array} moveHistory
+   */
+  ragdoll.moveHistory = []
+
+  /**
    * enable joint motor
    * 
    * @method flex
@@ -319,6 +324,24 @@ module.exports = function(game) {
       clone.anchor.y = part.anchor.y
     })
     return ragdollClone
+  }
+
+  /**
+   * move the ragdoll
+   *
+   * @method executeMove
+   * @param {Object} move
+   */
+  ragdoll.executeMove = function (move) {
+    var _this = this
+    _this.moveHistory.push(move)
+
+    switch (move.type) {
+      case 'expand'  : _this.flex(move.jointName) ;break 
+      case 'contract': _this.flex(move.jointName) ;break 
+      case 'relax'   : _this.relax(move.jointName) ;break 
+      case 'tense'   : _this.tense(move.jointName) ;break 
+    }
   }
 
   return ragdoll

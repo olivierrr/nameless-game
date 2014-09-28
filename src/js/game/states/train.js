@@ -21,6 +21,8 @@ module.exports = function(game) {
 
     p1 = Ragdoll(game)
 
+    p1.savePosition()
+    p1.shadow()
     // debug
     window.game = game 
     window.o = p1
@@ -34,7 +36,8 @@ module.exports = function(game) {
 
     if(frameCount === 100) {
       frameCount = 0
-      p1.shadow()
+      
+      p1.loadPosition()
       p1.relaxAll()
     }
 

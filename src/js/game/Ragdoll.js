@@ -332,13 +332,14 @@ module.exports = function(game) {
   }
 
   /**
-   * move the ragdoll
+   * move ragdoll
    *
    * @method executeMove
    * @param {Object} move
    */
   ragdoll.executeMove = function (move) {
     var _this = this
+
     _this.moveHistory.push(move)
 
     switch (move.type) {
@@ -347,6 +348,18 @@ module.exports = function(game) {
       case 'relax'   : _this.relax(move.jointName) ;break 
       case 'tense'   : _this.tense(move.jointName) ;break 
     }
+  }
+
+  /**
+   * move ragdoll
+   *
+   * @method executeMoves
+   * @param {Array} moves
+   */
+  ragdoll.executeMoves = function (moves) {
+    var _this = this
+
+    moves.forEach(_this.executeMove)
   }
 
   /**
@@ -370,23 +383,30 @@ module.exports = function(game) {
    */
   ragdoll.savePosition = function () {
     var _this = this
-    var pos = _this.children.map(function(part, i) {
-      return [part.body.data.position[0], part.body.data.position[1]]
+
+    var pos = _this.children.map(function(part) {
+      return {
+        x: part.body.data.position[0], 
+        y: part.body.data.position[1],
+        angle: part.body.data.angle
+      }
     })
     _this.positionHistory.push(pos)
   }
 
   /**
-   * mode ragdoll to last position on postision history
+   * move ragdoll to last position on postision history
    * 
    * @method loadPosition
    */
   ragdoll.loadPosition = function () {
     var _this = this
+
     var pos = _this.positionHistory[_this.positionHistory.length-1]
     _this.children.forEach(function(part, i) {
-      part.body.data.position[0] = pos[i][0]
-      part.body.data.position[1] = pos[i][1]
+      part.body.data.position[0] = pos[i].x
+      part.body.data.position[1] = pos[i].y
+      part.body.data.angle = pos[i].angle
     })
   }
 

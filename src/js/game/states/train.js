@@ -14,6 +14,7 @@ module.exports = function(game) {
     mainMenuButton.inputEnabled = true
     mainMenuButton.events.onInputDown.add(function() {
 			game.state.start('singleplayermenu')
+      p1.destroy(true)
     })
 
     game.physics.startSystem(Phaser.Physics.P2JS)
@@ -24,6 +25,7 @@ module.exports = function(game) {
     p1.newTurn()
     p1.savePosition()
     p1.shadow()
+    
     // debug
     window.game = game 
     window.o = p1

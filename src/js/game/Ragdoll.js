@@ -3,8 +3,6 @@ module.exports = function(game) {
   var FORCE = 10000
   var M = 100 // scale
 
-  var ragdoll = game.add.group()
-
   var bodySprites = {}
   var bodyJoints = {}
   var bodyParts = {}
@@ -24,8 +22,6 @@ module.exports = function(game) {
   sizes.upperLegSize = 0.2
   sizes.lowerLegSize = 0.2
   sizes.lowerLegLength = 0.5
-
-
 
   // apply scale multiplier
   Object.keys(sizes).forEach(function(key) {
@@ -193,6 +189,13 @@ module.exports = function(game) {
     limits: [-Math.PI/4, Math.PI/4]
   }
 
+  //
+
+  var ragdoll = game.add.group()
+
+  /**
+   * create muscles
+   */
   Object.keys(bodyParts).forEach(function(key) {
 
     var x = bodyParts[key].x
@@ -212,7 +215,9 @@ module.exports = function(game) {
     bodySprites[key] = part
   })
 
-
+  /**
+   * create joints
+   */
   Object.keys(bodyJoints).forEach(function(key) {
 
     var joint = bodyJoints[key]
@@ -232,30 +237,37 @@ module.exports = function(game) {
     ragdoll.joints[key] = constraint
   })
 
+  /**
+   * attach click events
+   */
   ragdoll.children.forEach(function(part){
-
     part.inputEnabled = true
     part.events.onInputDown.add(function(e) {
       switch (e.body.sprite.name) {
-        case 'head'         : flex('neckJoint')      ;break
-        case 'upperLeftArm' : flex('leftShoulder')   ;break
-        case 'lowerLeftArm' : flex('leftElbowJoint') ;break
-        case 'upperRightArm': flex('rightShoulder')  ;break
-        case 'lowerRightArm': flex('rightElbowJoint');break
-        case 'upperLeftLeg' : flex('leftHipJoint')   ;break
-        case 'lowerLeftLeg' : flex('leftKneeJoint')  ;break
-        case 'upperRightLeg': flex('rightHipJoint')  ;break
-        case 'lowerRightLeg': flex('rightKneeJoint') ;break
-        case 'pelvis'       : flex('spineJoint')     ;break
-        case 'upperBody'    : flex('spineJoint')     ;break
+        case 'head'         : ragdoll.flex('neckJoint')      ;break
+        case 'upperLeftArm' : ragdoll.flex('leftShoulder')   ;break
+        case 'lowerLeftArm' : ragdoll.flex('leftElbowJoint') ;break
+        case 'upperRightArm': ragdoll.flex('rightShoulder')  ;break
+        case 'lowerRightArm': ragdoll.flex('rightElbowJoint');break
+        case 'upperLeftLeg' : ragdoll.flex('leftHipJoint')   ;break
+        case 'lowerLeftLeg' : ragdoll.flex('leftKneeJoint')  ;break
+        case 'upperRightLeg': ragdoll.flex('rightHipJoint')  ;break
+        case 'lowerRightLeg': ragdoll.flex('rightKneeJoint') ;break
+        case 'pelvis'       : ragdoll.flex('spineJoint')     ;break
+        case 'upperBody'    : ragdoll.flex('spineJoint')     ;break
       }
     })
   })
 
-  // temp 
-
-  function flex(jointName) {
-    var joint = ragdoll.joints[jointName]
+  /**
+   * enable joint motor
+   * 
+   * @method flex
+   * @param {String} jointName
+   */
+  ragdoll.flex = function(jointName) {
+    var _this = this
+    var joint = _this.joints[jointName]
     joint.enableMotor()
     if(joint.d === 1) {
       joint.setMotorSpeed(3)
@@ -267,18 +279,47 @@ module.exports = function(game) {
     }
   }
 
-  function relax(jointName) {
+  /**
+   * disabling motor on all joints
+   *
+   * @method relaxAll
+   */
+  ragdoll.relaxAll = function() {
+    var _this = this
+    Object.keys(_this.joints).forEach(function(joint) {
+      _this.relax(joint)
+    })
+  }
+
+  /**
+   * disable joint motor
+   *
+   * @method relax
+   * @param {String} jointName
+   */
+  ragdoll.relax = function(jointName) {
     var joint = ragdoll.joints[jointName]
     joint.disableMotor()
   }
 
-  ragdoll.relaxAll = function() {
-    var joints = this.joints
-    Object.keys(joints).forEach(function(joint) {
-      relax(joint)
+  /**
+   * create partial clone of ragdoll with no physics
+   *
+   * @method clone
+   * @return {PhaserGroup} a copy of ragdoll
+   */
+  ragdoll.clone = function() {
+    var ragdollClone = game.add.group()
+    var parts = this.children.forEach(function(part) {
+      var clone = ragdollClone.create(part.position.x, part.position.y, part.key)
+      clone.width = part.width
+      clone.height = part.height
+      clone.rotation = part.rotation
+      clone.anchor.x = part.anchor.x
+      clone.anchor.y = part.anchor.y
     })
+    return ragdollClone
   }
 
   return ragdoll
-
 }

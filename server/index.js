@@ -24,9 +24,11 @@ io.on('connection', function (socket) {
 
   	socket.broadcast.to(socket.id).emit('players-list', players)
 
-  	socket.emit('player-list', players)
-  	players.push(socket.id)
+  	if(isGame === true) socket.broadcast.to(socket.id).emit('new-game', {p1: p1, p2: p2})
 
+  	players.push(socket.id)
+  	socket.emit('player-list', players)
+  	
   	if(isGame === false && players.length >= 2) {
   		isGame = true
   		p1 = players[0]
@@ -38,24 +40,28 @@ io.on('connection', function (socket) {
 
 			socket.on('action', function(move) {
 
-				if(socket.id === p1 || socket.id === p2) {
-
-					if(socket.id === p1) p1t = move
-					if(socket.id === p2) p2t = move
-
-					if(p1t && p2t) {
-						cosket.emit('turn', {p1: p1t, p2: p2t})
-						p1t = false
-						p2t = false
-					}
+				if(socket.id === p1) {
+					p1t = move
 				}
+				if(socket.id === p2) {
+					p2t = move
+				}
+
+				if(p1t && p2t) {
+					socket.emit('turn', {p1: p1t, p2: p2t})
+					p1t = false
+					p2t = false
+					p1s = 0
+					p2s = 0
+				}
+
 			})
   	}
   })
 
   socket.on('disconnect', function () {
-  	socket.emit('player-list', players)
   	players.splice(players.indexOf(socket.id, 0))
+  	socket.emit('player-list', players)
   })
 
 })

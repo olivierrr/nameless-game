@@ -1,4 +1,4 @@
-module.exports = function(game) {
+module.exports = function(game, offsetX, offsetY) {
 
   var FORCE = 10000
   var M = 100 // scale
@@ -141,14 +141,14 @@ module.exports = function(game) {
     b: 'pelvis',
     pivot_a: [0, sizes.upperLegLength / 2],
     pivot_b: [-sizes.shouldersDistance / 2, -sizes.pelvisLength / 2],
-    limits: [-Math.PI/6, Math.PI/3]
+    limits: [-Math.PI/6, Math.PI/4]
   }
   bodyJoints.rightHipJoint = {
     a: 'upperRightLeg',
     b: 'pelvis',
     pivot_a: [0, sizes.upperLegLength / 2],
     pivot_b: [sizes.shouldersDistance / 2, -sizes.pelvisLength / 2],
-    limits: [-Math.PI/3, Math.PI/6]
+    limits: [-Math.PI/4, Math.PI/6]
   }
     // Spine
   bodyJoints.spineJoint = {
@@ -198,12 +198,12 @@ module.exports = function(game) {
    */
   Object.keys(bodyParts).forEach(function(key) {
 
-    var x = bodyParts[key].x
-    var y = bodyParts[key].y
+    var x = bodyParts[key].x + offsetX
+    var y = bodyParts[key].y + offsetY
     var w = bodyParts[key].w
     var h = bodyParts[key].h
 
-    var part = ragdoll.create(x, y, 'redsquare')
+    var part = ragdoll.create(x, y, 'whitesquare')
 
     part.width = w
     part.height = h
@@ -242,10 +242,13 @@ module.exports = function(game) {
    */
   function clickEvents (sprites) {
     sprites.children.forEach(function(part){
+
       part.inputEnabled = true
       part.events.onInputDown.add(function(e) {
 
-        switch (e.name) {
+        var muscle = e.name
+
+        switch (muscle) {
           case 'head'         : ragdoll.newMove({type:'expand', jointName: 'neckJoint'})      ;break
           case 'upperLeftArm' : ragdoll.newMove({type:'expand', jointName: 'leftShoulder'})   ;break
           case 'lowerLeftArm' : ragdoll.newMove({type:'expand', jointName: 'leftElbowJoint'}) ;break
@@ -258,11 +261,14 @@ module.exports = function(game) {
           case 'pelvis'       : ragdoll.newMove({type:'expand', jointName: 'spineJoint'})     ;break
           case 'upperBody'    : ragdoll.newMove({type:'expand', jointName: 'spineJoint'})     ;break
         }
+
+        ragdoll.shadowClone.children.filter(function (part) {
+          return part.name === muscle
+        })[0].loadTexture('bluesquare')
+
       })
     })
   }
-
-  clickEvents(ragdoll)
 
   /**
    * @property {Array} moveHistory
@@ -332,7 +338,7 @@ module.exports = function(game) {
   }
 
   /**
-   * register a new move to latest turn
+   * register a new move to latest turn (moveHistory)
    *
    * @method newMove
    * @param {Object} move
@@ -367,8 +373,10 @@ module.exports = function(game) {
    * @method executeMoves
    * @param {Array} turn
    */
-  ragdoll.executeMoves = function (turn) {
+  ragdoll.executeMoves = function (turn, alpha) {
     var _this = this
+
+    _this.alpha = alpha || 1 
 
     Object.keys(turn).forEach(function (jointName) {
       _this.executeMove(jointName, turn[jointName])
@@ -386,6 +394,10 @@ module.exports = function(game) {
     var _this = this
 
     _this.moveHistory.push({})
+
+    Object.keys(bodySprites).forEach(function (part) {
+      bodySprites[part].loadTexture('whitesquare')
+    })
   }
 
   /**
@@ -399,7 +411,6 @@ module.exports = function(game) {
     if(_this.shadowClone) _this.shadowClone.destroy(true)
 
     _this.shadowClone = _this.clone()
-    _this.shadowClone.alpha = 0.5
 
     clickEvents( _this.shadowClone )
   }
@@ -444,6 +455,10 @@ module.exports = function(game) {
       data.velocity[0] = pos[i].vx,
       data.velocity[1] = pos[i].vy
     })
+  }
+
+  function cycle (current) {
+    return current<4 ? current++ : 0
   }
 
   return ragdoll

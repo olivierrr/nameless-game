@@ -10,13 +10,25 @@
 
 		<script>
 
-		var socket = io('http://localhost');
+		var socket = io('http://localhost')
 
 		socket.on('player-list', function (list) {
 			console.log(list)
 		})
 
 		socket.emit('join-lobby')
+
+		socket.on('new-game', function (players) {
+
+			console.log(players)
+			var p1 = players.p1
+			var p2 = players.p2
+
+			socket.on('turn', function (moves) {
+
+				console.log(moves)
+			})
+		})
 
 		</script>
 

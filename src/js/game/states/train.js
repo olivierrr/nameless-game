@@ -20,8 +20,7 @@ module.exports = function(game) {
     game.physics.startSystem(Phaser.Physics.P2JS)
     game.physics.p2.gravity.y = 300
 
-    p1 = Ragdoll(game)
-
+    p1 = Ragdoll(game, 100, 100)
     p1.newTurn()
     p1.savePosition()
     p1.shadow()
@@ -46,7 +45,7 @@ module.exports = function(game) {
       if(newTurn === false) {
         p1.loadPosition()
         p1.relaxAll()
-        p1.executeMoves(p1.moveHistory[p1.moveHistory.length-1])
+        p1.executeMoves(p1.moveHistory[p1.moveHistory.length-1], 0.5)
       }
 
       if(newTurn === true) {

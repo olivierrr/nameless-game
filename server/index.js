@@ -16,75 +16,46 @@ function handler (req, res) {
   })
 }
 
-var lobbies = {}
+var players = [], p1, p2, isGame = false, p1t, p2t
 
 io.on('connection', function (socket) {
 
+  socket.on('join-lobby', function () {
 
-	/**
-	 * @emit list of online lobbies
-	 */
-  socket.on('get-lobbies', function () {
-    socket.emit('lobbies', { success: lobbies })
-  })
+  	socket.broadcast.to(socket.id).emit('players-list', players)
 
-  /**
-   * @emit lobby info
-   */
-  socket.on('join-lobby', function (lobbyName) {
-  	if (lobbies[lobbyName]) {
-  		socket.join('lobbyName')
-  		socket.emit('lobby', { success: lobbies[lobbyName] })
-  	} else {
-  		socket.emit('lobby', { error: 'lobby does not exist' })
+  	socket.emit('player-list', players)
+  	players.push(socket.id)
+
+  	if(isGame === false && players.length >= 2) {
+  		isGame = true
+  		p1 = players[0]
+			p2 = players[1]
+			p1t = false
+			p2t = false
+
+			socket.emit('new-game', {p1: p1, p2: p2})
+
+			socket.on('action', function(move) {
+
+				if(socket.id === p1 || socket.id === p2) {
+
+					if(socket.id === p1) p1t = move
+					if(socket.id === p2) p2t = move
+
+					if(p1t && p2t) {
+						cosket.emit('turn', {p1: p1t, p2: p2t})
+						p1t = false
+						p2t = false
+					}
+				}
+			})
   	}
-  })
-
-  /**
-   * @emit
-   */
-  socket.on('leave-lobby', function (lobbyName) {
-  	if (lobbies[lobbyName]) {
-  		socket.leave(lobbyName)
-  		socket.emit('lobby', { success: 'you have left ' + lobbyName })
-  	} else {
-  		socket.emit('lobby', { error: 'lobby does not exist' })
-  	}
-  })
-
-  /**
-   * @emit
-   */
-  socket.on('leave-lobby', function (lobbyName) {
-
-  })
-
-  /**
-   * @emit
-   */
-  socket.on('leave-lobby', function (lobbyName) {
-
   })
 
   socket.on('disconnect', function () {
-
+  	socket.emit('player-list', players)
+  	players.splice(players.indexOf(socket.id, 0))
   })
 
 })
-
-/*
-	lobby events/constructor?
-*/
-function Lobby (lobbyName) {
-	var lobby = io.sockets.in(lobbyName)
-
-	lobby.on('join', function (socket) {
-
-		lobby.broadcast('user-joins', {})
-	})
-
-	Lobby.on('leave', function (socket) {
-
-		lobby.broadcast('user-leaves', {})
-	})
-}

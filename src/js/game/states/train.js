@@ -24,9 +24,9 @@ module.exports = function(game) {
     p1.newTurn()
     p1.savePosition()
     p1.shadow()
-    
+
     // debug
-    window.game = game 
+    window.game = game
     window.o = p1
   }
 

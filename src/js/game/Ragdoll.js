@@ -232,6 +232,7 @@ module.exports = function(game, offsetX, offsetY) {
       )
 
     constraint.setLimits(joint.limits[0], joint.limits[1])
+    constraint.c = 0 // test!
 
     if(!ragdoll.joints) ragdoll.joints = {}
     ragdoll.joints[key] = constraint
@@ -242,32 +243,41 @@ module.exports = function(game, offsetX, offsetY) {
    */
   function clickEvents (sprites) {
     sprites.children.forEach(function(part){
-
       part.inputEnabled = true
       part.events.onInputDown.add(function(e) {
-
-        var muscle = e.name
-
-        switch (muscle) {
-          case 'head'         : ragdoll.newMove({type:'expand', jointName: 'neckJoint'})      ;break
-          case 'upperLeftArm' : ragdoll.newMove({type:'expand', jointName: 'leftShoulder'})   ;break
-          case 'lowerLeftArm' : ragdoll.newMove({type:'expand', jointName: 'leftElbowJoint'}) ;break
-          case 'upperRightArm': ragdoll.newMove({type:'expand', jointName: 'rightShoulder'})  ;break
-          case 'lowerRightArm': ragdoll.newMove({type:'expand', jointName: 'rightElbowJoint'});break
-          case 'upperLeftLeg' : ragdoll.newMove({type:'expand', jointName: 'leftHipJoint'})   ;break
-          case 'lowerLeftLeg' : ragdoll.newMove({type:'expand', jointName: 'leftKneeJoint'})  ;break
-          case 'upperRightLeg': ragdoll.newMove({type:'expand', jointName: 'rightHipJoint'})  ;break
-          case 'lowerRightLeg': ragdoll.newMove({type:'expand', jointName: 'rightKneeJoint'}) ;break
-          case 'pelvis'       : ragdoll.newMove({type:'expand', jointName: 'spineJoint'})     ;break
-          case 'upperBody'    : ragdoll.newMove({type:'expand', jointName: 'spineJoint'})     ;break
-        }
-
-        ragdoll.shadowClone.children.filter(function (part) {
-          return part.name === muscle
-        })[0].loadTexture('bluesquare')
-
+        muscleClick(e.name)
       })
     })
+  }
+
+  function muscleClick(muscleName) {
+
+    parts = {
+      'head'         : 'neckJoint',
+      'upperLeftArm' : 'leftShoulder',
+      'lowerLeftArm' : 'leftElbowJoint',
+      'upperRightArm': 'rightShoulder',
+      'lowerRightArm': 'rightElbowJoint',
+      'upperLeftLeg' : 'leftHipJoint',   
+      'lowerLeftLeg' : 'leftKneeJoint',  
+      'upperRightLeg': 'rightHipJoint', 
+      'lowerRightLeg': 'rightKneeJoint', 
+      'pelvis'       : 'spineJoint',     
+      'upperBody'    : 'spineJoint'
+    }
+
+    var jointName = parts[muscleName]
+    var joint = ragdoll.joints[jointName]
+
+    ragdoll.newMove({jointName: jointName, type: 'expand'})
+
+    ragdoll.shadowClone.children.filter(function (part) {
+      return part.name === muscleName
+    })[0].loadTexture('bluesquare')
+  }
+
+  function cycle (current) {
+    return current<4 ? current++ : 0
   }
 
   /**
@@ -278,7 +288,17 @@ module.exports = function(game, offsetX, offsetY) {
   /**
    * @property {Array} positionHistory
    */
-   ragdoll.positionHistory = []
+  ragdoll.positionHistory = []
+
+  /**
+   * @property {Boolean} isReady
+   */
+  ragdoll.isReady = false
+
+  /** 
+   * @property {Boolen} isAllowingInput
+   */
+  ragdoll.isAllowingInput = true
 
   /**
    * enable joint motor
@@ -455,10 +475,6 @@ module.exports = function(game, offsetX, offsetY) {
       data.velocity[0] = pos[i].vx,
       data.velocity[1] = pos[i].vy
     })
-  }
-
-  function cycle (current) {
-    return current<4 ? current++ : 0
   }
 
   return ragdoll

@@ -14,7 +14,7 @@ var Player = function (game, x, y) {
 	this.game = game
 
 	/**
- 	 * @property {Phaser.group} ragdoll
+ 	 * @Object {Phaser.group} ragdoll
 	 */
 	this.ragdoll = Ragdoll(game, x, y)
 
@@ -37,14 +37,22 @@ var Player = function (game, x, y) {
   this.turnHistory = []
 
   /**
+   *
+   *
    * @property {Array} currentPosition
    */
   this.currentPosition = []
 
+  /**
+   *
+   * @property {Number} health
+   */
+  this.health = 100
+
 }
 
 /**
- * pushes an empty Object to turnHistory
+ * pushes an empty turn Object to turnHistory
  * ragdoll.newAction will push moves to newly pushed Object
  *
  * @method newTurn
@@ -58,7 +66,7 @@ Player.prototype.newTurn = function () {
 }
 
 /**
- * register a new move to latest turn (turnHistory)
+ * register a new move to latest turn on turnHistory
  *
  * @method newAction
  * @param {Object} move
@@ -106,27 +114,11 @@ Player.prototype.loadPosition = function () {
   })
 }
 
-
-/**
- * singleton clone
- *
- * @method shadow
- */
-Player.prototype.shadow = function () {
-
-  if(this.shadowClone) this.shadowClone.destroy(true)
-
-  this.shadowClone = this.clone()
-	
-	// TODO
-  attachEvents(this.shadowClone, this)
-}
-
 /**
  * create shallow copy of ragdoll with no physics
  *
  * @method clone
- * @return {PhaserGroup} a copy of ragdoll
+ * @return {Phaser.Group} a copy of ragdoll
 */
 Player.prototype.clone = function () {
   var ragdollClone = this.game.add.group()
@@ -141,6 +133,21 @@ Player.prototype.clone = function () {
     clone.name = part.name
   })
   return ragdollClone
+}
+
+/**
+ * singleton clone
+ *
+ * @method shadow
+ */
+Player.prototype.shadow = function () {
+
+  if(this.shadowClone) this.shadowClone.destroy(true)
+
+  this.shadowClone = this.clone()
+  
+  // TODO
+  attachEvents(this.shadowClone, this)
 }
 
 /**
@@ -218,9 +225,9 @@ joint = {
 
 // -todo
 Player.prototype.method0 = function () {
-  p1.newTurn()
-  p1.savePosition()
-  p1.shadow()
+  this.newTurn()
+  this.savePosition()
+  this.shadow()
 }
 // -todo
 Player.prototype.method1 = function () {

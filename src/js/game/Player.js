@@ -6,7 +6,18 @@ var Ragdoll = require('./Ragdoll.js')
  * @extends Ragdoll
  * @constructor Player
  */
-var Player = function (game, x, y) {
+var Player = function (controller, game, x, y) {
+
+  /**
+   * available controllers: 
+   *  'me'      - controlled by users input
+   *  'dummy'   - no conroller
+   *  'network' - controller over network
+   *
+   * @property {String} controller
+   * @default 'dummy'
+   */
+  this.controller = controller || 'dummy'
 
 	/**
 	 * @reference {Phaser.game} game
@@ -37,18 +48,28 @@ var Player = function (game, x, y) {
   this.turnHistory = []
 
   /**
-   *
-   *
    * @property {Array} currentPosition
    */
   this.currentPosition = []
 
   /**
-   *
    * @property {Number} health
    */
   this.health = 100
 
+  //TEST
+  this.isResetingPlayback = false
+
+  if(controller === 'dummy') {
+    this.isAllowingInput = false
+    this.isReady = true
+  }
+  if(controller === 'network') {
+    this.isAllowingInput = false
+  }
+  if(controller === 'me') {
+
+  }
 }
 
 /**
@@ -60,9 +81,12 @@ var Player = function (game, x, y) {
 Player.prototype.newTurn = function () {
   this.turnHistory.push({})
 
+  // this shouldn't be here
   this.ragdoll.children.forEach(function (part) {
     part.loadTexture('whitesquare')
   })
+
+  this.isReady = false
 }
 
 /**
@@ -147,7 +171,7 @@ Player.prototype.shadow = function () {
   this.shadowClone = this.clone()
   
   // TODO
-  attachEvents(this.shadowClone, this)
+  if(this.isAllowingInput) attachEvents(this.shadowClone, this)
 }
 
 /**
@@ -226,7 +250,8 @@ function muscleClick (muscleName) {
   var action
 
   if(jointState === 'expand') action = 'contract'
-  else if(jointState === 'contract') action = 'expand'
+  else if(jointState === 'contract') action = 'relax'
+  else if(jointState === 'relax') action = 'expand'
   else action = 'expand'
 
   console.log(action, jointName)
@@ -238,12 +263,23 @@ function muscleClick (muscleName) {
 
   textures = {
     'expand'  : 'redsquare',
-    'contract': 'bluesquare'
+    'contract': 'bluesquare',
+    'relax'   : 'whitesquare'
   }
 
   this.shadowClone.children.filter(function (part) {
     return part.name === muscleName
   })[0].loadTexture(textures[action])
+
+  this.isResetingPlayback = true
+}
+
+Player.prototype.resetPlayback = function () {
+  if(this.isResetingPlayback === true) {
+    this.isResetingPlayback = false
+    return true
+  }
+  else return false
 }
 
 // -todo
@@ -265,7 +301,6 @@ Player.prototype.method2 = function () {
   this.ragdoll.relaxAll()
   this.executeMoves(this.turnHistory[this.turnHistory.length-1], 0.5)
 }
-
 
 
 module.exports = Player

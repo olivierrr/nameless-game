@@ -4,7 +4,7 @@ module.exports = function(game) {
 
   var gameState = {}
 
-  var p1
+  var p1, p2
 
   gameState.create = function () {
 
@@ -15,13 +15,17 @@ module.exports = function(game) {
     mainMenuButton.events.onInputDown.add(function() {
 			game.state.start('singleplayermenu')
       p1.ragdoll.destroy(true)
+      p2.ragdoll.destroy(true)
     })
 
     game.physics.startSystem(Phaser.Physics.P2JS)
-    game.physics.p2.gravity.y = 300
+    game.physics.p2.gravity.y = 200
 
-    p1 = new Player(game, 100, 100)
+    p1 = new Player('me', game, 200, 200)
     p1.method0()
+
+    p2 = new Player('dummy', game, 600, 200)
+    p2.method0()
     
     // debug
     window.game = game
@@ -35,15 +39,24 @@ module.exports = function(game) {
 
     frameCount++
 
+    if(p1.resetPlayback() || p2.resetPlayback()) {
+      p1.method2()
+      p2.method2()
+      frameCount = 0
+    }
+
     if(frameCount === 100) {
       frameCount = 0
       
       if(newTurn === false) {
         p1.method2()
+        p2.method2()
       }
 
       if(newTurn === true) {
+
         p1.method1()
+        p2.method1()
         newTurn = false
       }
     }

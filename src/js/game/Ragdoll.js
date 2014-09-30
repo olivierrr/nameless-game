@@ -1,6 +1,6 @@
 module.exports = function(game, offsetX, offsetY) {
 
-  var FORCE = 10000
+  var FORCE = 1000
   var M = 100 // scale
 
   var bodySprites = {}
@@ -232,7 +232,7 @@ module.exports = function(game, offsetX, offsetY) {
       )
 
     constraint.setLimits(joint.limits[0], joint.limits[1])
-    constraint.c = 0 // test!
+    constraint.collideConnected = false
 
     if(!ragdoll.joints) ragdoll.joints = {}
     ragdoll.joints[key] = constraint

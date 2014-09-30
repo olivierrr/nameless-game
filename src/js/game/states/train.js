@@ -1,4 +1,4 @@
-var Ragdoll = require('../Ragdoll.js')
+var Player = require('../Player.js')
 
 module.exports = function(game) {
 
@@ -14,17 +14,15 @@ module.exports = function(game) {
     mainMenuButton.inputEnabled = true
     mainMenuButton.events.onInputDown.add(function() {
 			game.state.start('singleplayermenu')
-      p1.destroy(true)
+      p1.ragdoll.destroy(true)
     })
 
     game.physics.startSystem(Phaser.Physics.P2JS)
     game.physics.p2.gravity.y = 300
 
-    p1 = Ragdoll(game, 100, 100)
-    p1.newTurn()
-    p1.savePosition()
-    p1.shadow()
-
+    p1 = new Player(game, 100, 100)
+    p1.method0()
+    
     // debug
     window.game = game
     window.o = p1
@@ -43,16 +41,11 @@ module.exports = function(game) {
       frameCount = 0
       
       if(newTurn === false) {
-        p1.loadPosition()
-        p1.relaxAll()
-        p1.executeMoves(p1.moveHistory[p1.moveHistory.length-1], 0.5)
+        p1.method2()
       }
 
       if(newTurn === true) {
-        p1.relaxAll()
-        p1.newTurn()
-        p1.savePosition()
-        p1.shadow()
+        p1.method1()
         newTurn = false
       }
     }

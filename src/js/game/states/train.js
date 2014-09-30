@@ -29,7 +29,8 @@ module.exports = function(game) {
     
     // debug
     window.game = game
-    window.o = p1
+    window.p1 = p1
+    window.p2 = p2
   }
 
   var frameCount = 0
@@ -47,22 +48,19 @@ module.exports = function(game) {
 
     if(frameCount === 100) {
       frameCount = 0
-      
-      if(newTurn === false) {
-        p1.method2()
-        p2.method2()
-      }
 
-      if(newTurn === true) {
-
+      if(p1.ready() && p2.ready()) {
         p1.method1()
         p2.method1()
-        newTurn = false
+      } else {
+        p1.method2()
+        p2.method2()
       }
     }
 
     if(game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)) {
-      newTurn = true
+      p1.isReady = true
+      p2.isReady = true
     }
   }
 

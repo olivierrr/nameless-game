@@ -282,6 +282,14 @@ Player.prototype.resetPlayback = function () {
   else return false
 }
 
+Player.prototype.ready = function(first_argument) {
+  if(this.isReady === true) {
+    this.isReady = false
+    return true
+  }
+  else return false
+}
+
 // -todo
 Player.prototype.method0 = function () {
   this.newTurn()

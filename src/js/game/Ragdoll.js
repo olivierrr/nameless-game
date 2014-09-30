@@ -1,6 +1,6 @@
 module.exports = function(game, offsetX, offsetY) {
 
-  var FORCE = 1000
+  var FORCE = 10000
   var M = 100 // scale
 
   var bodySprites = {}

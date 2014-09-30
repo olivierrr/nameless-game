@@ -11,6 +11,14 @@ module.exports = function(game) {
     mainMenuButton.events.onInputDown.add(function() {
 			game.state.start('mainmenu')
     })
+
+    var train = game.add.text(game.world.centerX, 300, 'quickmatch', style)
+    train.anchor.setTo(0.5, 0.5)
+    train.inputEnabled = true
+    train.events.onInputDown.add(function() {
+      game.state.start('quickmatch')
+    })
+
   }
 
   return gameState

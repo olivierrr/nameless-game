@@ -14,8 +14,8 @@ module.exports = function(game) {
     mainMenuButton.inputEnabled = true
     mainMenuButton.events.onInputDown.add(function() {
 			game.state.start('singleplayermenu')
-      p1.ragdoll.destroy(true)
-      p2.ragdoll.destroy(true)
+      p1.ragdoll.destroy()
+      p2.ragdoll.destroy()
     })
 
     game.physics.startSystem(Phaser.Physics.P2JS)

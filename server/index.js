@@ -22,14 +22,19 @@ io.on('connection', function (socket) {
 
   socket.on('join-lobby', function () {
 
-  	socket.broadcast.to(socket.id).emit('players-list', players)
+    console.log(socket.id, 'has joined lobby')
 
-  	if(isGame === true) socket.broadcast.to(socket.id).emit('new-game', {p1: p1, p2: p2})
+    io.to(socket.id).emit('id', socket.id)
 
-  	players.push(socket.id)
-  	socket.emit('player-list', players)
-  	
+    players.push(socket.id)
+  	io.sockets.emit('players-list', players)
+
+  	//if(isGame === true) socket.broadcast.to(socket.id).emit('new-game', {p1: p1, p2: p2})
+
   	if(isGame === false && players.length >= 2) {
+
+      console.log('starting new game')
+
   		isGame = true
   		p1 = players[0]
 			p2 = players[1]
@@ -59,9 +64,16 @@ io.on('connection', function (socket) {
   	}
   })
 
+  socket.on('leave-lobby', function () {
+    players.splice(players.indexOf(socket.id, 0))
+    io.sockets.emit('player-list', players)
+    console.log(socket.id, 'has left lobby')
+  })
+
   socket.on('disconnect', function () {
   	players.splice(players.indexOf(socket.id, 0))
-  	socket.emit('player-list', players)
+  	io.sockets.emit('player-list', players)
+    console.log(socket.id, 'has left lobby')
   })
 
 })

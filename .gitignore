@@ -1,8 +1,5 @@
 # nodejs npm modules
 node_modules
 
-# Build files
-build/*
-
 # cocoon build
 nameless-game.zip

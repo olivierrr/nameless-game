@@ -244,12 +244,22 @@ module.exports = function(game, offsetX, offsetY) {
    * @method flex
    * @param {String} jointName
    */
-  ragdoll.flex = function(jointName) {
-    var _this = this
-
-    var joint = _this.joints[jointName]
+  ragdoll.flex = function (jointName) {
+    var joint = this.joints[jointName]
     joint.enableMotor()
     joint.setMotorSpeed(3)
+  }
+
+  /**
+   * enable joint motor
+   * 
+   * @method contract
+   * @param {String} jointName
+   */
+  ragdoll.contract = function (jointName) {
+    var joint = this.joints[jointName]
+    joint.enableMotor()
+    joint.setMotorSpeed(-3)
   }
 
   /**

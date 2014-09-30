@@ -33,9 +33,7 @@ module.exports = function(game) {
 
   gameState.update = function () {
 
-    if(game.paused === false) {
-      frameCount++
-    }
+    frameCount++
 
     if(frameCount === 100) {
       frameCount = 0
@@ -51,7 +49,6 @@ module.exports = function(game) {
     }
 
     if(game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)) {
-      console.log('spacebar')
       newTurn = true
     }
   }

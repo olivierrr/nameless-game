@@ -159,10 +159,10 @@ Player.prototype.shadow = function () {
  */
 Player.prototype.executeMove = function (jointName, type) {
   switch (type) {
-    case 'expand'  : this.ragdoll.flex(jointName)  ;break 
-    case 'contract': this.ragdoll.flex(jointName)  ;break 
-    case 'relax'   : this.ragdoll.relax(jointName) ;break 
-    case 'tense'   : this.ragdoll.tense(jointName) ;break 
+    case 'expand'  : this.ragdoll.flex(jointName)     ;break 
+    case 'contract': this.ragdoll.contract(jointName) ;break 
+    case 'relax'   : this.ragdoll.relax(jointName)    ;break 
+    case 'tense'   : this.ragdoll.tense(jointName)    ;break 
   }
 }
 
@@ -182,6 +182,16 @@ Player.prototype.executeMoves = function (turn, alpha) {
   })
 }
 
+/**
+ * -todo
+ */
+Player.prototype.replayLastMove = function (turn) {
+
+  this.shadowClone.destroy()
+
+  this.executeMove(turn, 1)
+}
+
 //// TODO ////
 
 // TEMP - TODO
@@ -197,30 +207,43 @@ function attachEvents (ragdoll, ctx) {
 // TEMP - TODO
 function muscleClick (muscleName) {
 
-joint = {
-  'head'         : 'neckJoint',
-  'upperLeftArm' : 'leftShoulder',
-  'lowerLeftArm' : 'leftElbowJoint',
-  'upperRightArm': 'rightShoulder',
-  'lowerRightArm': 'rightElbowJoint',
-  'upperLeftLeg' : 'leftHipJoint',   
-  'lowerLeftLeg' : 'leftKneeJoint',  
-  'upperRightLeg': 'rightHipJoint', 
-  'lowerRightLeg': 'rightKneeJoint', 
-  'pelvis'       : 'spineJoint',     
-  'upperBody'    : 'spineJoint'
-}
+  joint = {
+    'head'         : 'neckJoint',
+    'upperLeftArm' : 'leftShoulder',
+    'lowerLeftArm' : 'leftElbowJoint',
+    'upperRightArm': 'rightShoulder',
+    'lowerRightArm': 'rightElbowJoint',
+    'upperLeftLeg' : 'leftHipJoint',   
+    'lowerLeftLeg' : 'leftKneeJoint',  
+    'upperRightLeg': 'rightHipJoint', 
+    'lowerRightLeg': 'rightKneeJoint', 
+    'pelvis'       : 'spineJoint',     
+    'upperBody'    : 'spineJoint'
+  }
 
   var jointName = joint[muscleName]
+  var jointState = this.turnHistory[this.turnHistory.length-1][jointName]
+  var action
+
+  if(jointState === 'expand') action = 'contract'
+  else if(jointState === 'contract') action = 'expand'
+  else action = 'expand'
+
+  console.log(action, jointName)
 
   this.newAction({
   	jointName: jointName, 
-  	type: 'expand'
+  	type: action
   })
+
+  textures = {
+    'expand'  : 'redsquare',
+    'contract': 'bluesquare'
+  }
 
   this.shadowClone.children.filter(function (part) {
     return part.name === muscleName
-  })[0].loadTexture('bluesquare')
+  })[0].loadTexture(textures[action])
 }
 
 // -todo

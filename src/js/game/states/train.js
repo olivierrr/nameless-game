@@ -14,17 +14,23 @@ module.exports = function(game) {
     mainMenuButton.inputEnabled = true
     mainMenuButton.events.onInputDown.add(function() {
 			game.state.start('singleplayermenu')
-      p1.ragdoll.destroy()
-      p2.ragdoll.destroy()
+      if(p1&&p2) {
+        p1.ragdoll.destroy()
+        p2.ragdoll.destroy()
+        p1 = null
+        p2 = null
+      }
     })
 
     game.physics.startSystem(Phaser.Physics.P2JS)
     game.physics.p2.gravity.y = 200
 
-    p1 = new Player('me', game, 200, 200)
+    p1 = new Player(game, 200, 200)
+    p1.setController('me')
     p1.method0()
 
-    p2 = new Player('dummy', game, 600, 200)
+    p2 = new Player(game, 600, 200)
+    p2.setController('dummy')
     p2.method0()
     
     // debug
@@ -58,7 +64,7 @@ module.exports = function(game) {
       }
     }
 
-    if(game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)) {
+    if(game.input.keyboard.justPressed(Phaser.Keyboard.SPACEBAR)) {
       p1.isReady = true
       p2.isReady = true
     }

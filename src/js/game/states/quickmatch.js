@@ -12,9 +12,14 @@ module.exports = function(game) {
 
   var id
 
+  var game = game
+
   gameState.create = function () {
 
     socket = window.socket = io('http://localhost:9000')
+
+    game.physics.startSystem(Phaser.Physics.P2JS)
+    game.physics.p2.gravity.y = 200
 
   	var style = { font: '40px Arial', fill: '#ffffff', align: 'center'}
   	var mainMenuButton = game.add.text(100, 50, 'back', style)
@@ -32,14 +37,17 @@ module.exports = function(game) {
       }
     })
 
+    p1 = new Player(game, 200, 200)
+    p1.method0()
+    p2 = new Player(game, 600, 200)
+    p2.method0()
+
     socket.emit('join-lobby')
+
     socket.on('id', function(socketId) {
       console.log('id', socketId)
-      id = id
+      id = socketId
     })
-
-    game.physics.startSystem(Phaser.Physics.P2JS)
-    game.physics.p2.gravity.y = 200
 
     socket.on('players-list', function (playerList) {
       console.log(playerList)
@@ -50,47 +58,58 @@ module.exports = function(game) {
 
     socket.on('new-game', function (players) {
 
+      console.log(players)
+
       isP1 = false
       isP2 = false
 
-      if(p1 || p2) {
-        p1.ragdoll.destroy()
-        p1 = null
-        p2.ragdoll.destroy()
-        p2 = null
+      if(players.p1 === id) {
+        isP1 = true
+        p1.setController('me')
+        p1.reset()
+        p1.method0()
+        console.log('you are p1')
+      } else {
+        isP2 = false
+        p1.setController('dummy')
+        p1.reset()
+        p1.method0()
       }
 
-      if(id === players.p1 || id === players.p2) {
-
-        if(players.p1 === id) {
-          isP1 = true
-          p1 = new Player('me', game, 200, 200)
-          p1.method0()
-        } else {
-          p1 = new Player('network', game, 200, 200)
-        }
-
-        if(players.p2 === id) {
-          isP2 = true
-          p2 = new Player('me', game, 600, 200)
-          p2.method0()
-        } else {
-          p2 = new Player('network', game, 600, 200)
-        }
+      if(players.p2 === id) {
+        isP2 = true
+        p2.setController('me')
+        p2.reset()
+        p2.method0()
+        console.log('you are p2')
+      } else {
+        isP2 = false
+        p2.setController('dummy')
+        p2.reset()
+        p2.method0()
       }
 
-      console.log(players)
       var p1id = players.p1
       var p2id = players.p2
 
       socket.on('turn', function (turn) {
-        p2.turnHistory.push(turn)
+        if(isP2) {
+          p1.turnHistory.push(turn.p1)
+        } 
+        else if(isP1) {
+          p2.turnHistory.push(turn.p2)
+        }
+        else {
+          p1.turnHistory.push(turn.p1)
+          p2.turnHistory.push(turn.p2)
+        }
+
+        p1.method1()
+        p2.method1()
+
         console.log(turn)
       })
     })
-
-    game.physics.startSystem(Phaser.Physics.P2JS)
-    game.physics.p2.gravity.y = 200
     
     // debug
     window.game = game
@@ -116,21 +135,17 @@ module.exports = function(game) {
 
       if(frameCount === 100) {
         frameCount = 0
+        p1.method2()
+        p2.method2()
+      }
 
-        if(p1.ready() && p2.ready()) {
-          p1.method1()
-          p2.method1()
-        } else {
-          p1.method2()
-          p2.method2()
+      if(game.input.keyboard.justPressed(Phaser.Keyboard.SPACEBAR)) {
+        if(isP1 || isP2) {
+          socket.emit('action', id)
         }
       }
-
-      if(game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)) {
-        p1.isReady = true
-        p2.isReady = true
-      }
     }
+
   }
 
   return gameState

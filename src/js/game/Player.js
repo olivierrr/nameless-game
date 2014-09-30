@@ -6,7 +6,7 @@ var Ragdoll = require('./Ragdoll.js')
  * @extends Ragdoll
  * @constructor Player
  */
-var Player = function (controller, game, x, y) {
+var Player = function (game, x, y) {
 
   /**
    * available controllers: 
@@ -17,7 +17,7 @@ var Player = function (controller, game, x, y) {
    * @property {String} controller
    * @default 'dummy'
    */
-  this.controller = controller || 'dummy'
+  this.controller = 'dummy'
 
 	/**
 	 * @reference {Phaser.game} game
@@ -60,16 +60,6 @@ var Player = function (controller, game, x, y) {
   //TEST
   this.isResetingPlayback = false
 
-  if(controller === 'dummy') {
-    this.isAllowingInput = false
-    this.isReady = true
-  }
-  if(controller === 'network') {
-    this.isAllowingInput = false
-  }
-  if(controller === 'me') {
-
-  }
 }
 
 /**
@@ -274,6 +264,27 @@ function muscleClick (muscleName) {
   this.isResetingPlayback = true
 }
 
+Player.prototype.setController = function(controller) {
+  this.controller = controller
+
+  if(controller === 'dummy') {
+    this.isAllowingInput = false
+    this.isReady = true
+  }
+  if(controller === 'network') {
+    this.isAllowingInput = false
+  }
+  if(controller === 'me') {
+
+  }
+
+}
+
+Player.prototype.reset = function() {
+  this.turnHistory = []
+  this.currentPosition = [] 
+}
+
 Player.prototype.resetPlayback = function () {
   if(this.isResetingPlayback === true) {
     this.isResetingPlayback = false
@@ -282,7 +293,7 @@ Player.prototype.resetPlayback = function () {
   else return false
 }
 
-Player.prototype.ready = function(first_argument) {
+Player.prototype.ready = function() {
   if(this.isReady === true) {
     this.isReady = false
     return true

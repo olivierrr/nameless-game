@@ -20,6 +20,8 @@ var players = [], p1, p2, isGame = false, p1t, p2t
 
 io.on('connection', function (socket) {
 
+  //socket.on('action', function(x) {console.log(x)})
+
   socket.on('join-lobby', function () {
 
     console.log(socket.id, 'has joined lobby')
@@ -32,7 +34,6 @@ io.on('connection', function (socket) {
   	//if(isGame === true) socket.broadcast.to(socket.id).emit('new-game', {p1: p1, p2: p2})
 
   	if(isGame === false && players.length >= 2) {
-
       console.log('starting new game')
 
   		isGame = true
@@ -41,38 +42,42 @@ io.on('connection', function (socket) {
 			p1t = false
 			p2t = false
 
-			socket.emit('new-game', {p1: p1, p2: p2})
-
-			socket.on('action', function(move) {
-
-				if(socket.id === p1) {
-					p1t = move
-				}
-				if(socket.id === p2) {
-					p2t = move
-				}
-
-				if(p1t && p2t) {
-					socket.emit('turn', {p1: p1t, p2: p2t})
-					p1t = false
-					p2t = false
-					p1s = 0
-					p2s = 0
-				}
-
-			})
+			io.sockets.emit('new-game', {p1: p1, p2: p2})
   	}
+
+    socket.on('action', function(move) {
+
+      console.log('ARCTIONAWDAWD', socket.id)
+
+      if(socket.id === p1) {
+        p1t = move
+      }
+      if(socket.id === p2) {
+        p2t = move
+      }
+
+      console.log(move)
+
+      if(p1t && p2t) {
+        io.sockets.emit('turn', {p1: p1t, p2: p2t})
+        p1t = false
+        p2t = false
+      }
+    })
   })
 
   socket.on('leave-lobby', function () {
     players.splice(players.indexOf(socket.id, 0))
-    io.sockets.emit('player-list', players)
+    if(socket.id === p1 || socket.id === p2) isGame = false
+    io.sockets.emit('players-list', players)
     console.log(socket.id, 'has left lobby')
+    socket.disconnect()
   })
 
   socket.on('disconnect', function () {
   	players.splice(players.indexOf(socket.id, 0))
-  	io.sockets.emit('player-list', players)
+    if(socket.id === p1 || socket.id === p2) isGame = false
+  	io.sockets.emit('players-list', players)
     console.log(socket.id, 'has left lobby')
   })
 

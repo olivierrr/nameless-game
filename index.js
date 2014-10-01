@@ -1,20 +1,18 @@
 var app = require('http').createServer(handler)
 var io = require('socket.io')(app)
-var fs = require('fs')
 
-app.listen(9000)
+var static = require('node-static')
+var file = new static.Server('./build')
 
-function handler (req, res) {
-  fs.readFile(__dirname + '../build/index.html',
-  function (err, data) {
-    if (err) {
-      res.writeHead(500)
-      return res.end('Error 500')
-    }
-    res.writeHead(200)
-    res.end(data)
-  })
+function handler (request, response) {
+    request.addListener('end', function () {
+        file.serve(request, response)
+    }).resume()
 }
+
+app.listen( process.env.PORT || 9000 )
+
+console.log('port', (process.env.PORT||9000) )
 
 var players = [], p1, p2, isGame = false, p1t, p2t
 

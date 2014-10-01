@@ -56,9 +56,10 @@ module.exports = function(game) {
     if(frameCount === 100) {
       frameCount = 0
 
-      if(p1.ready() && p2.ready()) {
+      if(newTurn === true) {
         p1.method1()
         p2.method1()
+        newTurn = false
       } else {
         p1.method2()
         p2.method2()
@@ -66,16 +67,13 @@ module.exports = function(game) {
     }
 
     if(game.input.keyboard.justPressed(Phaser.Keyboard.SPACEBAR)) {
-      p1.isReady = true
-      p2.isReady = true
+      newTurn = true
     }
   }
 
   gameState.shutdown = function () {
-    p1.ragdoll.destroy()
-    p2.ragdoll.destroy()
-    p1 = null
-    p2 = null
+    p1.destroy()
+    p2.destroy()
   }
 
   return gameState

@@ -149,10 +149,8 @@ module.exports = function(game) {
 
   gameState.shutdown = function () {
     socket.emit('leave-lobby')
-    p1.ragdoll.destroy()
-    p2.ragdoll.destroy()
-    p1 = null
-    p2 = null
+    p1.destroy()
+    p2.destroy()
   }
 
   return gameState

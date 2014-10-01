@@ -29,11 +29,6 @@ var Player = function (game, x, y) {
 	 */
 	this.ragdoll = Ragdoll(game, x, y)
 
-	/**
-	 * @property {Boolean} isReady
-	 */
-	this.isReady = false
-
 	/** 
    * @property {Boolen} isAllowingInput
    */
@@ -62,7 +57,11 @@ var Player = function (game, x, y) {
    */
   this.health = 100
 
-  //TEST
+  /**
+   * request an animation playback
+   *
+   * @property {Boolean} isResetingPlayback
+   */
   this.isResetingPlayback = false
 
   this.savePosition()
@@ -82,8 +81,6 @@ Player.prototype.newTurn = function () {
   this.ragdoll.children.forEach(function (part) {
     part.loadTexture('whitesquare')
   })
-
-  this.isReady = false
 }
 
 /**
@@ -136,15 +133,15 @@ Player.prototype.loadPosition = function () {
 }
 
 /**
- * create shallow copy of ragdoll with no physics
+ * create shallow copy of ragdolls position
  *
  * @method clone
- * @return {Phaser.Group} a copy of ragdoll
+ * @return {Phaser.Group}
 */
 Player.prototype.clone = function () {
   var ragdollClone = this.game.add.group()
 
-  var parts = this.ragdoll.children.forEach(function(part) {
+  this.ragdoll.children.forEach(function(part) {
     var clone = ragdollClone.create(part.position.x, part.position.y, part.key)
     clone.width = part.width
     clone.height = part.height
@@ -159,11 +156,13 @@ Player.prototype.clone = function () {
 /**
  * singleton clone
  *
+ * todo - could be forcing position on previously made clone instead of destroying and creating new instance 
+ *
  * @method shadow
  */
 Player.prototype.shadow = function () {
 
-  if(this.shadowClone) this.shadowClone.destroy(true)
+  if(this.shadowClone) this.shadowClone.destroy()
 
   this.shadowClone = this.clone()
   
@@ -204,13 +203,39 @@ Player.prototype.executeMoves = function (turn, alpha) {
 }
 
 /**
- * -todo
+ * works like nodes EventEmitter.once for @property isResetingPlayback
+ *
+ * @method resetPlayback
  */
-Player.prototype.replayLastMove = function (turn) {
+Player.prototype.resetPlayback = function () {
+  if(this.isResetingPlayback === true) {
+    this.isResetingPlayback = false
+    return true
+  }
+  else return false
+}
 
-  this.shadowClone.destroy()
+/**
+ * reset back to initial instance position
+ *
+ * @method reset
+ */
+Player.prototype.reset = function() {
+  this.turnHistory = []
+  this.currentPosition = this.initialPosition
+  this.loadPosition()
+  this.shadow()
+}
 
-  this.executeMove(turn, 1)
+/**
+ * @method destroy
+ */
+Player.prototype.destroy = function() {
+  if(this.shadowClone) this.shadowClone.destroy()
+  this.ragdoll.destroy()
+  this.turnHistory = null
+  this.currentPosition = null
+  this.initialPosition = null
 }
 
 //// TODO ////
@@ -276,7 +301,6 @@ Player.prototype.setController = function(controller) {
 
   if(controller === 'dummy') {
     this.isAllowingInput = false
-    this.isReady = true
   }
   if(controller === 'network') {
     this.isAllowingInput = false
@@ -284,30 +308,6 @@ Player.prototype.setController = function(controller) {
   if(controller === 'me') {
 
   }
-
-}
-
-Player.prototype.reset = function() {
-  this.turnHistory = []
-  this.currentPosition = this.initialPosition
-  this.loadPosition()
-  this.shadow()
-}
-
-Player.prototype.resetPlayback = function () {
-  if(this.isResetingPlayback === true) {
-    this.isResetingPlayback = false
-    return true
-  }
-  else return false
-}
-
-Player.prototype.ready = function() {
-  if(this.isReady === true) {
-    this.isReady = false
-    return true
-  }
-  else return false
 }
 
 // -todo
@@ -329,6 +329,5 @@ Player.prototype.method2 = function () {
   this.ragdoll.relaxAll()
   this.executeMoves(this.turnHistory[this.turnHistory.length-1], 0.5)
 }
-
 
 module.exports = Player

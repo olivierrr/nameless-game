@@ -20,7 +20,7 @@ module.exports = function(game) {
 
   gameState.create = function () {
 
-    socket = window.socket = io('http://localhost')
+    socket = window.socket = io()
 
     game.physics.startSystem(Phaser.Physics.P2JS)
     game.physics.p2.gravity.y = 200

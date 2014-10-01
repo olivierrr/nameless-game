@@ -26,7 +26,7 @@ module.exports = function(game) {
     socket = io('http://localhost:9000')
 
     game.physics.startSystem(Phaser.Physics.P2JS)
-    game.physics.p2.gravity.y = 200
+    game.physics.p2.gravity.y = 150
 
   	var style = { font: '40px Arial', fill: '#ffffff', align: 'center'}
   	var mainMenuButton = game.add.text(100, 50, 'back', style)

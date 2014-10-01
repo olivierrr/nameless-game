@@ -21,7 +21,10 @@ module.exports = function(game) {
     })
 
     game.physics.startSystem(Phaser.Physics.P2JS)
-    game.physics.p2.gravity.y = 200
+    game.physics.p2.gravity.y = 150
+
+    game.physics.wallMaterial = game.physics.p2.createMaterial('wallMaterial')
+    game.physics.p2.setWorldMaterial(game.physics.wallMaterial, true, true, true, true)
 
     p1 = new Player(game, 200, 200)
     p1.setController('me')

@@ -1,7 +1,8 @@
 module.exports = function(game, offsetX, offsetY) {
 
-  var FORCE = 10000
+  var CONSTRAINT_FORCE = 99999999999999
   var M = 100 // scale
+  var MOTOR_FORCE = 5
 
   var bodySprites = {}
   var bodyJoints = {}
@@ -34,14 +35,14 @@ module.exports = function(game, offsetX, offsetY) {
     y: sizes.lowerLegLength / 2,
     w: sizes.lowerLegSize,
     h: sizes.lowerLegLength,
-    mass: 0.2
+    mass: 0.6
   }
   bodyParts.lowerRightLeg = {
     x: sizes.shouldersDistance / 2,
     y: sizes.lowerLegLength / 2,
     w: sizes.lowerLegSize,
     h: sizes.lowerLegLength,
-    mass: 0.2
+    mass: 0.6
   }
   // Upper legs
   bodyParts.upperLeftLeg = {
@@ -49,14 +50,14 @@ module.exports = function(game, offsetX, offsetY) {
     y: bodyParts.lowerLeftLeg.y + sizes.lowerLegLength / 2 + sizes.upperLegLength / 2,
     w: sizes.upperLegSize,
     h: sizes.upperLegLength,
-    mass: 1
+    mass: 0.5
   }
   bodyParts.upperRightLeg = {
     x: sizes.shouldersDistance / 2,
     y: bodyParts.lowerRightLeg.y + sizes.lowerLegLength / 2 + sizes.upperLegLength / 2,
     w: sizes.upperLegSize,
     h: sizes.upperLegLength,
-    mass: 1
+    mass: 0.5
   }
   // Pelvis
   bodyParts.pelvis = {
@@ -64,7 +65,7 @@ module.exports = function(game, offsetX, offsetY) {
     y: bodyParts.upperLeftLeg.y + sizes.upperLegLength / 2 + sizes.pelvisLength / 2,
     w: sizes.shouldersDistance,
     h: sizes.pelvisLength,
-    mass: 1
+    mass: 0.7
   }
   // Upper body
   bodyParts.upperBody = {
@@ -72,7 +73,7 @@ module.exports = function(game, offsetX, offsetY) {
     y: bodyParts.pelvis.y + sizes.pelvisLength / 2 + sizes.upperBodyLength / 2,
     w: sizes.shouldersDistance,
     h: sizes.upperBodyLength,
-    mass: 1
+    mass: 1.0
   }
   // Head
   bodyParts.head = {
@@ -80,7 +81,7 @@ module.exports = function(game, offsetX, offsetY) {
     y: bodyParts.upperBody.y + sizes.upperBodyLength / 2 + sizes.headRadius + sizes.neckLength,
     w: sizes.headRadius * 2,
     h: sizes.headRadius * 2,
-    mass: 1
+    mass: 0.3
   }
   // Upper arms
   bodyParts.upperLeftArm = {
@@ -88,14 +89,14 @@ module.exports = function(game, offsetX, offsetY) {
     y: bodyParts.upperBody.y + sizes.upperBodyLength / 2,
     w: sizes.upperArmLength,
     h: sizes.upperArmSize,
-    mass: 1
+    mass: 0.4
   }
   bodyParts.upperRightArm = {
     x: sizes.shouldersDistance / 2 + sizes.upperArmLength / 2,
     y: bodyParts.upperBody.y + sizes.upperBodyLength / 2,
     w: sizes.upperArmLength,
     h: sizes.upperArmSize,
-    mass: 1
+    mass: 0.4
   }
   // lower arms
   bodyParts.lowerLeftArm = {
@@ -103,14 +104,14 @@ module.exports = function(game, offsetX, offsetY) {
     y: bodyParts.upperLeftArm.y,
     w: sizes.lowerArmLength,
     h: sizes.lowerArmSize,
-    mass: 1
+    mass: 0.6
   }
   bodyParts.lowerRightArm = {
     x: bodyParts.upperRightArm.x + sizes.lowerArmLength / 2 + sizes.upperArmLength / 2,
     y: bodyParts.upperRightArm.y,
     w: sizes.lowerArmLength,
     h: sizes.lowerArmSize,
-    mass: 1
+    mass: 0.6
   }
   // Neck
   bodyJoints.neckJoint = {
@@ -118,7 +119,7 @@ module.exports = function(game, offsetX, offsetY) {
     b: 'upperBody',
     pivot_a: [0, -sizes.headRadius - sizes.neckLength / 2],
     pivot_b: [0, sizes.upperBodyLength / 2],
-    limits: [-Math.PI/12, Math.PI/12]
+    limits: [-Math.PI/2, Math.PI/2]
   }
   // Knees
   bodyJoints.leftKneeJoint = {
@@ -126,14 +127,14 @@ module.exports = function(game, offsetX, offsetY) {
     b: 'upperLeftLeg',
     pivot_a: [0, sizes.lowerLegLength / 2],
     pivot_b: [0, -sizes.upperLegLength / 2],
-    limits: [-Math.PI/5, Math.PI/5]
+    limits: [-Math.PI/2, Math.PI/2]
   }
   bodyJoints.rightKneeJoint = {
     a: 'lowerRightLeg',
     b: 'upperRightLeg',
     pivot_a: [0, sizes.lowerLegLength / 2],
     pivot_b: [0, -sizes.upperLegLength / 2],
-    limits: [-Math.PI/5, Math.PI/5]
+    limits: [-Math.PI/2, Math.PI/2]
   }
   // Hips
   bodyJoints.leftHipJoint = {
@@ -141,24 +142,24 @@ module.exports = function(game, offsetX, offsetY) {
     b: 'pelvis',
     pivot_a: [0, sizes.upperLegLength / 2],
     pivot_b: [-sizes.shouldersDistance / 2, -sizes.pelvisLength / 2],
-    limits: [-Math.PI/6, Math.PI/4]
+    limits: [-Math.PI/2, Math.PI/2]
   }
   bodyJoints.rightHipJoint = {
     a: 'upperRightLeg',
     b: 'pelvis',
     pivot_a: [0, sizes.upperLegLength / 2],
     pivot_b: [sizes.shouldersDistance / 2, -sizes.pelvisLength / 2],
-    limits: [-Math.PI/4, Math.PI/6]
+    limits: [-Math.PI/2, Math.PI/2]
   }
-    // Spine
+  // Spine
   bodyJoints.spineJoint = {
     a: 'pelvis',
     b: 'upperBody',
     pivot_a: [0, sizes.pelvisLength / 2],
     pivot_b: [0, -sizes.upperBodyLength / 2],
-    limits: [-Math.PI/5, Math.PI/5]
+    limits: [-Math.PI/6, Math.PI/6]
   }
-    // Shoulders
+  // Shoulders
   bodyJoints.leftShoulder = {
     a: 'upperBody',
     b: 'upperLeftArm',
@@ -173,20 +174,20 @@ module.exports = function(game, offsetX, offsetY) {
     pivot_b: [-sizes.upperArmLength / 2, 0],
     limits: [-Math.PI/2, Math.PI/2]
   }
-    // Elbows
+  // Elbows
   bodyJoints.leftElbowJoint = {
     a: 'lowerLeftArm',
     b: 'upperLeftArm',
     pivot_a: [sizes.lowerArmLength / 2, 0],
     pivot_b: [-sizes.upperArmLength / 2, 0],
-    limits: [-Math.PI/4, Math.PI/4]
+    limits: [-Math.PI/2, Math.PI/2]
   }
   bodyJoints.rightElbowJoint = {
     a: 'lowerRightArm',
     b: 'upperRightArm',
     pivot_a: [-sizes.lowerArmLength / 2, 0],
     pivot_b: [sizes.upperArmLength / 2, 0],
-    limits: [-Math.PI/4, Math.PI/4]
+    limits: [-Math.PI/2, Math.PI/2]
   }
 
   //
@@ -196,12 +197,13 @@ module.exports = function(game, offsetX, offsetY) {
   /**
    * create muscles
    */
-  Object.keys(bodyParts).forEach(function(key) {
+  Object.keys(bodyParts).forEach(function (key) {
 
     var x = bodyParts[key].x + offsetX
     var y = bodyParts[key].y + offsetY
     var w = bodyParts[key].w
     var h = bodyParts[key].h
+    var mass = bodyParts[key].mass
 
     var part = ragdoll.create(x, y, 'whitesquare')
 
@@ -212,17 +214,19 @@ module.exports = function(game, offsetX, offsetY) {
 
     game.physics.p2.enable(part)
 
+    part.body.mass = mass
+
     var wallMaterial = game.physics.wallMaterial
     var partMaterial = game.physics.p2.createMaterial(key+'Material', part.body)
 
     var contactMaterial = game.physics.p2.createContactMaterial(partMaterial, wallMaterial)
 
-    contactMaterial.friction = 20.0          // Friction to use in the contact of these two materials.
+    contactMaterial.friction = 100.0         // Friction to use in the contact of these two materials.
     contactMaterial.restitution = 0.5        // Restitution (i.e. how bouncy it is!) to use in the contact of these two materials.
     contactMaterial.stiffness = 1e7          // Stiffness of the resulting ContactEquation that this ContactMaterial generate.
     contactMaterial.relaxation = 3           // Relaxation of the resulting ContactEquation that this ContactMaterial generate.
     contactMaterial.frictionStiffness = 1e7  // Stiffness of the resulting FrictionEquation that this ContactMaterial generate.
-    contactMaterial.frictionRelaxation = 3   // Relaxation of the resulting FrictionEquation that this ContactMaterial generate.
+    contactMaterial.frictionRelaxation = 100 // Relaxation of the resulting FrictionEquation that this ContactMaterial generate.
     contactMaterial.surfaceVelocity = 0      // Will add surface velocity to this material. If bodyA rests on top if bodyB, and the surface velocity is positive, bodyA will slide to the right.
 
     bodySprites[key] = part
@@ -231,7 +235,7 @@ module.exports = function(game, offsetX, offsetY) {
   /**
    * create joints
    */
-  Object.keys(bodyJoints).forEach(function(key) {
+  Object.keys(bodyJoints).forEach(function (key) {
 
     var joint = bodyJoints[key]
     
@@ -241,11 +245,24 @@ module.exports = function(game, offsetX, offsetY) {
         joint.pivot_a, 
         bodySprites[joint.b], 
         joint.pivot_b, 
-        FORCE
+        CONSTRAINT_FORCE
       )
 
     constraint.setLimits(joint.limits[0], joint.limits[1])
-    constraint.collideConnected = false
+
+    constraint.collideConnected = true
+
+    //constraint.lowerLimitEquation.needsUpdate = true
+    //constraint.upperLimitEquation.needsUpdate = true 
+
+    // constraint.lowerLimitEquation.multiplier = 99999
+    // constraint.upperLimitEquation.multiplier = 99999
+
+    //constraint.lowerLimitEquation.epsilon = 1000
+    //constraint.upperLimitEquation.epsilon = 1000
+
+    constraint.motorEquation.relaxation = 9999999
+    constraint.motorEquation.stiffness = 1
 
     if(!ragdoll.joints) ragdoll.joints = {}
     ragdoll.joints[key] = constraint
@@ -259,8 +276,9 @@ module.exports = function(game, offsetX, offsetY) {
    */
   ragdoll.flex = function (jointName) {
     var joint = this.joints[jointName]
+    joint.setMotorSpeed(0)
     joint.enableMotor()
-    joint.setMotorSpeed(3)
+    joint.setMotorSpeed(MOTOR_FORCE)
   }
 
   /**
@@ -271,8 +289,9 @@ module.exports = function(game, offsetX, offsetY) {
    */
   ragdoll.contract = function (jointName) {
     var joint = this.joints[jointName]
+    joint.setMotorSpeed(0)
     joint.enableMotor()
-    joint.setMotorSpeed(-3)
+    joint.setMotorSpeed(-MOTOR_FORCE)
   }
 
   /**

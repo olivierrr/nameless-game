@@ -49,11 +49,8 @@ module.exports = function(game) {
     })
 
     socket.on('players-list', function (playerList) {
-      players = []
-
-      playerList.forEach(function(player, i) {
-        var player = game.add.text(550, 20*(i+1), player, {fill: '#ffffff', font: '16px Arial'})
-        players.push(player)
+      players = playerList.map(function(player, i) {
+        return game.add.text(550, 20*(i+1), player, {fill: '#ffffff', font: '16px Arial'})
       })
     })
 

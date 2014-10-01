@@ -1,4 +1,5 @@
 var Player = require('../Player.js')
+var Arena = require('../Arena.js')
 
 module.exports = function(game) {
 
@@ -20,11 +21,7 @@ module.exports = function(game) {
 			game.state.start('singleplayermenu')
     })
 
-    game.physics.startSystem(Phaser.Physics.P2JS)
-    game.physics.p2.gravity.y = 1000
-
-    game.physics.wallMaterial = game.physics.p2.createMaterial('wallMaterial')
-    game.physics.p2.setWorldMaterial(game.physics.wallMaterial, true, true, true, true)
+    var arena = new Arena(game)
 
     p1 = new Player(game, 200, 200)
     p1.setController('me')
@@ -74,6 +71,7 @@ module.exports = function(game) {
   gameState.shutdown = function () {
     p1.destroy()
     p2.destroy()
+    game.physics.destroy()
   }
 
   return gameState

@@ -252,8 +252,8 @@ module.exports = function(game, offsetX, offsetY) {
 
     constraint.collideConnected = true
 
-    //constraint.lowerLimitEquation.needsUpdate = true
-    //constraint.upperLimitEquation.needsUpdate = true 
+    constraint.lowerLimitEquation.needsUpdate = true
+    constraint.upperLimitEquation.needsUpdate = true 
 
     // constraint.lowerLimitEquation.multiplier = 99999
     // constraint.upperLimitEquation.multiplier = 99999
@@ -261,8 +261,8 @@ module.exports = function(game, offsetX, offsetY) {
     //constraint.lowerLimitEquation.epsilon = 1000
     //constraint.upperLimitEquation.epsilon = 1000
 
-    constraint.motorEquation.relaxation = 9999999
-    constraint.motorEquation.stiffness = 1
+    constraint.motorEquation.relaxation = 4
+    constraint.motorEquation.stiffness = 1100000
 
     if(!ragdoll.joints) ragdoll.joints = {}
     ragdoll.joints[key] = constraint

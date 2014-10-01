@@ -82,8 +82,8 @@ module.exports = function(game) {
       p2.method0()
 
       socket.on('turn', function (turn) {
-        p1.turnHistory[p1.turnHistory.length-1] = turn.p1
-        p2.turnHistory[p1.turnHistory.length-1] = turn.p2
+        p1.setLastTurn(turn.p1)
+        p2.setLastTurn(turn.p2)
         newTurn = true
         isSpacebarLocked = false
       })
@@ -110,8 +110,8 @@ module.exports = function(game) {
       }
 
       if(frameCount === 1 && newTurn === true) {
-        p1.executeMoves(p1.turnHistory[p1.turnHistory.length-1], 0.5)
-        p2.executeMoves(p2.turnHistory[p2.turnHistory.length-1], 0.5)
+        p1.executeMoves(p1.getLastTurn(), 0.5)
+        p2.executeMoves(p2.getLastTurn(), 0.5)
         hasPlayedBack = true
       } 
 
@@ -148,6 +148,7 @@ module.exports = function(game) {
     socket.emit('leave-lobby')
     p1.destroy()
     p2.destroy()
+    game.physics.destroy()
   }
 
   return gameState

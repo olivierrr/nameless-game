@@ -153,6 +153,20 @@ Player.prototype.clone = function () {
   return ragdollClone
 }
 
+/*
+ * @method setLastTurn
+ */
+Player.prototype.setLastTurn = function (turn) {
+  this.turnHistory[this.turnHistory.length-1] = turn
+}
+
+/**
+ * @method getLastTurn
+ */
+Player.prototype.getLastTurn = function () {
+  return this.turnHistory[this.turnHistory.length-1]
+}
+
 /**
  * singleton clone
  *

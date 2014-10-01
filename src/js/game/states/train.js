@@ -30,7 +30,7 @@ module.exports = function(game) {
     p2 = new Player(game, 600, 200)
     p2.setController('dummy')
     p2.method0()
-    
+
     // debug
     window.game = game
     window.p1 = p1

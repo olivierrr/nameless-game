@@ -2,6 +2,10 @@ module.exports = function(game) {
 
   var gameState = {}
 
+  gameState.preload = function () {
+    game.stage.disableVisibilityChange = true
+  }
+
   gameState.create = function () {
 
     var logo = game.add.sprite(game.world.centerX, 200, 'logo')

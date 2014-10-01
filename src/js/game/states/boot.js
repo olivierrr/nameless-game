@@ -17,9 +17,13 @@ module.exports = function(game) {
     }, 1000 / 60)
   }
 
-  var boot = {}
+  var gameState = {}
 
-  boot.create = function () {
+  gameState.preload = function () {
+    game.stage.disableVisibilityChange = true
+  }
+
+  gameState.create = function () {
 
     if (properties.showStats) addStats()
 
@@ -30,5 +34,5 @@ module.exports = function(game) {
     game.state.start('preloader')
   }
 
-  return boot
+  return gameState
 }

@@ -2,6 +2,10 @@ module.exports = function(game) {
 
   var gameState = {}
 
+  gameState.preload = function () {
+    game.stage.disableVisibilityChange = true
+  }
+
   gameState.create = function () {
   	
   	var style = { font: '40px Arial', fill: '#ffffff', align: 'center'}

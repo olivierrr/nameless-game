@@ -12,7 +12,7 @@ function handler (request, response) {
 
 app.listen( process.env.PORT || 9000 )
 
-console.log('port', (process.env.PORT||9000) )
+console.log( 'port', (process.env.PORT||9000) )
 
 var players = [], p1, p2, isGame = false, p1t, p2t
 

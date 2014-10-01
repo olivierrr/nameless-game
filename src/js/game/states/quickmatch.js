@@ -8,19 +8,22 @@ module.exports = function(game) {
 
   var p1, p2, isP1, isP2
 
-  var isPlaying = false
-
   var id
 
-  var game = game
+  var players
 
-    var frameCount = 0
+  var frameCount = 0
   var newTurn = false
   var hasPlayedBack = false
+  var isSpacebarLocked = false
+
+  gameState.preload = function () {
+    game.stage.disableVisibilityChange = true
+  }
 
   gameState.create = function () {
 
-    socket = window.socket = io()
+    socket = io('http://localhost:9000')
 
     game.physics.startSystem(Phaser.Physics.P2JS)
     game.physics.p2.gravity.y = 200
@@ -30,15 +33,7 @@ module.exports = function(game) {
     mainMenuButton.anchor.setTo(0.5, 0.5)
     mainMenuButton.inputEnabled = true
     mainMenuButton.events.onInputDown.add(function() {
-      socket.emit('leave-lobby')
 			game.state.start('multiplayermenu')
-
-      if(p1&&p2) {
-        p1.ragdoll.destroy()
-        p2.ragdoll.destroy()
-        p1 = null
-        p2 = null
-      }
     })
 
     p1 = new Player(game, 200, 200)
@@ -54,57 +49,51 @@ module.exports = function(game) {
     })
 
     socket.on('players-list', function (playerList) {
-      console.log(playerList)
+      players = []
+
       playerList.forEach(function(player, i) {
-        game.add.text(550, 20*(i+1), player, {fill: '#ffffff', font: '16px Arial'})
+        var player = game.add.text(550, 20*(i+1), player, {fill: '#ffffff', font: '16px Arial'})
+        players.push(player)
       })
     })
 
     socket.on('new-game', function (players) {
 
-      console.log(players)
-
-      isP1 = false
-      isP2 = false
+      console.log('new-game', players)
 
       if(players.p1 === id) {
         isP1 = true
         p1.setController('me')
-        p1.reset()
-        p1.method0()
         console.log('you are p1')
       } else {
         isP2 = false
-        p1.setController('dummy')
-        p1.reset()
-        p1.method0()
+        p1.setController('network')
       }
 
       if(players.p2 === id) {
         isP2 = true
         p2.setController('me')
-        p2.reset()
-        p2.method0()
         console.log('you are p2')
       } else {
         isP2 = false
-        p2.setController('dummy')
-        p2.reset()
-        p2.method0()
+        p2.setController('network')
       }
 
-      var p1id = players.p1
-      var p2id = players.p2
+      p1.reset()
+      p1.method0()
+      p2.reset()
+      p2.method0()
 
       socket.on('turn', function (turn) {
         p1.turnHistory[p1.turnHistory.length-1] = turn.p1
         p2.turnHistory[p1.turnHistory.length-1] = turn.p2
-
         newTurn = true
+        isSpacebarLocked = false
       })
     })
-    
+
     // debug
+    window.socket = socket
     window.game = game
     window.p1 = p1
     window.p2 = p2
@@ -114,6 +103,8 @@ module.exports = function(game) {
   gameState.update = function () {
 
     if(p1 && p2) {
+
+      frameCount++
 
       if(p1.resetPlayback() || p2.resetPlayback()) {
         p1.method2()
@@ -146,14 +137,22 @@ module.exports = function(game) {
 
       if(game.input.keyboard.justPressed(Phaser.Keyboard.SPACEBAR)) {
         if(isP1 || isP2) {
-          var p = isP1 ? p1 : p2
-          socket.emit('action', p.turnHistory[p.turnHistory.length-1])
+          if(!isSpacebarLocked) {
+            var p = isP1 ? p1 : p2
+            socket.emit('action', p.turnHistory[p.turnHistory.length-1])
+            isSpacebarLocked = true
+          }
         }
       }
-
-      frameCount++
     }
+  }
 
+  gameState.shutdown = function () {
+    socket.emit('leave-lobby')
+    p1.ragdoll.destroy()
+    p2.ragdoll.destroy()
+    p1 = null
+    p2 = null
   }
 
   return gameState

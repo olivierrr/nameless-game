@@ -6,6 +6,10 @@ module.exports = function(game) {
 
   var p1, p2
 
+  gameState.preload = function () {
+    game.stage.disableVisibilityChange = true
+  }
+
   gameState.create = function () {
 
   	var style = { font: '40px Arial', fill: '#ffffff', align: 'center'}
@@ -14,12 +18,6 @@ module.exports = function(game) {
     mainMenuButton.inputEnabled = true
     mainMenuButton.events.onInputDown.add(function() {
 			game.state.start('singleplayermenu')
-      if(p1&&p2) {
-        p1.ragdoll.destroy()
-        p2.ragdoll.destroy()
-        p1 = null
-        p2 = null
-      }
     })
 
     game.physics.startSystem(Phaser.Physics.P2JS)
@@ -68,6 +66,13 @@ module.exports = function(game) {
       p1.isReady = true
       p2.isReady = true
     }
+  }
+
+  gameState.shutdown = function () {
+    p1.ragdoll.destroy()
+    p2.ragdoll.destroy()
+    p1 = null
+    p2 = null
   }
 
   return gameState

@@ -53,6 +53,11 @@ var Player = function (game, x, y) {
   this.currentPosition = []
 
   /**
+   * @property {Array} currentPosition
+   */
+  this.initialPosition = []
+
+  /**
    * @property {Number} health
    */
   this.health = 100
@@ -60,6 +65,8 @@ var Player = function (game, x, y) {
   //TEST
   this.isResetingPlayback = false
 
+  this.savePosition()
+  this.initialPosition = this.currentPosition 
 }
 
 /**
@@ -282,7 +289,9 @@ Player.prototype.setController = function(controller) {
 
 Player.prototype.reset = function() {
   this.turnHistory = []
-  this.currentPosition = [] 
+  this.currentPosition = this.initialPosition
+  this.loadPosition()
+  this.shadow()
 }
 
 Player.prototype.resetPlayback = function () {

@@ -14,6 +14,10 @@ module.exports = function(game) {
 
   var game = game
 
+    var frameCount = 0
+  var newTurn = false
+  var hasPlayedBack = false
+
   gameState.create = function () {
 
     socket = window.socket = io('http://localhost:9000')
@@ -93,21 +97,10 @@ module.exports = function(game) {
       var p2id = players.p2
 
       socket.on('turn', function (turn) {
-        if(isP2) {
-          p1.turnHistory.push(turn.p1)
-        } 
-        else if(isP1) {
-          p2.turnHistory.push(turn.p2)
-        }
-        else {
-          p1.turnHistory.push(turn.p1)
-          p2.turnHistory.push(turn.p2)
-        }
+        p1.turnHistory[p1.turnHistory.length-1] = turn.p1
+        p2.turnHistory[p1.turnHistory.length-1] = turn.p2
 
-        p1.method1()
-        p2.method1()
-
-        console.log(turn)
+        newTurn = true
       })
     })
     
@@ -118,14 +111,9 @@ module.exports = function(game) {
 
   }
 
-  var frameCount = 0
-  var newTurn = false
-
   gameState.update = function () {
 
     if(p1 && p2) {
-
-      frameCount++
 
       if(p1.resetPlayback() || p2.resetPlayback()) {
         p1.method2()
@@ -133,17 +121,37 @@ module.exports = function(game) {
         frameCount = 0
       }
 
+      if(frameCount === 1 && newTurn === true) {
+        p1.executeMoves(p1.turnHistory[p1.turnHistory.length-1], 0.5)
+        p2.executeMoves(p2.turnHistory[p2.turnHistory.length-1], 0.5)
+        hasPlayedBack = true
+      } 
+
       if(frameCount === 100) {
-        frameCount = 0
-        p1.method2()
-        p2.method2()
+
+        if(newTurn && hasPlayedBack) {
+          p1.method1()
+          p2.method1()
+          newTurn = false
+          hasPlayedBack = false
+          frameCount = 0
+          console.log('method1')
+        } else {
+          console.log('method2')
+          frameCount = 0
+          p1.method2()
+          p2.method2()
+        }
       }
 
       if(game.input.keyboard.justPressed(Phaser.Keyboard.SPACEBAR)) {
         if(isP1 || isP2) {
-          socket.emit('action', id)
+          var p = isP1 ? p1 : p2
+          socket.emit('action', p.turnHistory[p.turnHistory.length-1])
         }
       }
+
+      frameCount++
     }
 
   }

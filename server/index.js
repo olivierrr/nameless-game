@@ -20,8 +20,6 @@ var players = [], p1, p2, isGame = false, p1t, p2t
 
 io.on('connection', function (socket) {
 
-  //socket.on('action', function(x) {console.log(x)})
-
   socket.on('join-lobby', function () {
 
     console.log(socket.id, 'has joined lobby')
@@ -46,8 +44,6 @@ io.on('connection', function (socket) {
   	}
 
     socket.on('action', function(move) {
-
-      console.log('ARCTIONAWDAWD', socket.id)
 
       if(socket.id === p1) {
         p1t = move

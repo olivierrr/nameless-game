@@ -167,7 +167,7 @@ Player.prototype.shadow = function () {
   this.shadowClone = this.clone()
   
   // TODO
-  if(this.isAllowingInput) attachEvents(this.shadowClone, this)
+  attachEvents(this.shadowClone, this)
 }
 
 /**
@@ -252,6 +252,8 @@ function attachEvents (ragdoll, ctx) {
 
 // TEMP - TODO
 function muscleClick (muscleName) {
+
+  if(this.isAllowingInput === false) return
 
   joint = {
     'head'         : 'neckJoint',

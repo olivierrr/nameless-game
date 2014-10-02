@@ -65,7 +65,6 @@ module.exports = function(game) {
       players = playerList.map(function(player, i) {
         return game.add.text(550, 20*(i+1), player, {fill: '#ffffff', font: '16px Arial'})
       })
-      console.log(playerList)
     })
 
     socket.on('new-game', function (players) {

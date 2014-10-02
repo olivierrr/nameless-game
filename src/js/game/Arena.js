@@ -12,14 +12,18 @@ var Arena = function (game) {
 	this.game = game
 
 	game.physics.startSystem(Phaser.Physics.P2JS)
-  game.physics.p2.gravity.y = 800
 
+  game.physics.p2.gravity.y = 800
   game.physics.p2.world.solver.iterations = 100
 
   game.physics.wallMaterial = game.physics.p2.createMaterial('wallMaterial')
   game.physics.p2.setWorldMaterial(game.physics.wallMaterial, true, true, true, true)
 
-  window.o = game.physics.p2
+  // Turn on impact events for the world, without this we get no collision callbacks
+  game.physics.p2.setImpactEvents(true)
+
+  // debug
+  window.P2 = game.physics.p2
 }
 
 /*

@@ -194,6 +194,11 @@ module.exports = function(game, offsetX, offsetY) {
 
   var ragdoll = game.add.group(null, null, 'ragdoll')
 
+  var collisionGroup = game.physics.p2.createCollisionGroup()
+  game.physics.p2.updateBoundsCollisionGroup()
+
+  console.log(collisionGroup)
+
   /**
    * create muscles
    */
@@ -204,15 +209,16 @@ module.exports = function(game, offsetX, offsetY) {
     var w = bodyParts[key].w
     var h = bodyParts[key].h
     var mass = bodyParts[key].mass
+    var sprite = 'whitesquare'
 
     var part = ragdoll.create(x, y, 'whitesquare')
 
     part.width = w
     part.height = h
-
     part.name = key
 
     game.physics.p2.enable(part)
+    part.body.setCollisionGroup(collisionGroup)
 
     part.body.mass = mass
 

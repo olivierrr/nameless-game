@@ -29,6 +29,12 @@ module.exports = function(game) {
     p2.setController('dummy')
     p2.method0()
 
+    // p1.ragdoll.children.forEach(function (part) {
+    //   part.body.onBeginContact.add(function (a, b, c, d, e) {
+    //     console.log(b)
+    //   })
+    // })
+
     // debug
     window.game = game
     window.p1 = p1

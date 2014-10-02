@@ -176,12 +176,19 @@ Player.prototype.getLastTurn = function () {
  */
 Player.prototype.shadow = function () {
 
-  if(this.shadowClone) this.shadowClone.destroy()
+  this.destroyShadow()
 
   this.shadowClone = this.clone()
   
   // TODO
   attachEvents(this.shadowClone, this)
+}
+
+/**
+ * @method destroyShadow
+ */
+Player.prototype.destroyShadow = function() {
+  if(this.shadowClone) this.shadowClone.destroy()
 }
 
 /**
@@ -284,7 +291,7 @@ function muscleClick (muscleName) {
   }
 
   var jointName = joint[muscleName]
-  var jointState = this.turnHistory[this.turnHistory.length-1][jointName]
+  var jointState = this.getLastTurn()[jointName]
   var action
 
   if(jointState === 'expand') action = 'contract'
@@ -328,12 +335,14 @@ Player.prototype.setController = function(controller) {
 
 // -todo
 Player.prototype.method0 = function () {
+  this.ragdoll.alpha = 0.5
   this.newTurn()
   this.savePosition()
   this.shadow()
 }
 // -todo
 Player.prototype.method1 = function () {
+  this.ragdoll.alpha = 0.5
 	this.ragdoll.relaxAll()
   this.newTurn()
   this.savePosition()
@@ -343,7 +352,7 @@ Player.prototype.method1 = function () {
 Player.prototype.method2 = function () {
 	this.loadPosition()
   this.ragdoll.relaxAll()
-  this.executeMoves(this.turnHistory[this.turnHistory.length-1], 0.5)
+  this.executeMoves(this.getLastTurn(), 0.5)
 }
 
 module.exports = Player

@@ -12,7 +12,7 @@ module.exports = function(game) {
 
   var id
 
-  var players
+  var players = []
 
   var frameCount = 0
   var newTurn = false
@@ -47,9 +47,11 @@ module.exports = function(game) {
     })
 
     socket.on('players-list', function (playerList) {
+      players.forEach(function (p) { p.destroy() })
       players = playerList.map(function(player, i) {
         return game.add.text(550, 20*(i+1), player, {fill: '#ffffff', font: '16px Arial'})
       })
+      console.log(playerList)
     })
 
     socket.on('new-game', function (players) {
@@ -75,16 +77,27 @@ module.exports = function(game) {
       }
 
       p1.reset()
-      p1.method0()
       p2.reset()
+      p1.method0()
       p2.method0()
 
       socket.on('turn', function (turn) {
+        frameCount = 0
         p1.setLastTurn(turn.p1)
         p2.setLastTurn(turn.p2)
+        p1.loadPosition()
+        p2.loadPosition()
         newTurn = true
         isSpacebarLocked = false
       })
+    })
+
+    socket.on('game-over', function () {
+      console.log('game-over')
+      p1.reset()
+      p2.reset()
+      p1.method0()
+      p2.method0()
     })
 
     // debug
@@ -108,8 +121,10 @@ module.exports = function(game) {
       }
 
       if(frameCount === 1 && newTurn === true) {
-        p1.executeMoves(p1.getLastTurn(), 0.5)
-        p2.executeMoves(p2.getLastTurn(), 0.5)
+        p1.destroyShadow()
+        p2.destroyShadow()
+        p1.executeMoves(p1.getLastTurn(), 1)
+        p2.executeMoves(p2.getLastTurn(), 1)
         hasPlayedBack = true
       } 
 
@@ -134,7 +149,7 @@ module.exports = function(game) {
         if(isP1 || isP2) {
           if(!isSpacebarLocked) {
             var p = isP1 ? p1 : p2
-            socket.emit('action', p.turnHistory[p.turnHistory.length-1])
+            socket.emit('action', p.getLastTurn())
             isSpacebarLocked = true
           }
         }

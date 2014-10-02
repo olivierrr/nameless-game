@@ -12,45 +12,48 @@ function handler (request, response) {
 
 app.listen( process.env.PORT || 9000 )
 
-console.log( 'port', (process.env.PORT||9000) )
+console.log( '***** live on port', (process.env.PORT||9000), '*****' )
+
+var players = {
+
+  list: [],
+  p1: {
+    name : null,
+    socket: null,
+    turns : []
+  },
+  p2: {
+    name : null,
+    socket: null,
+    turns : []
+  }
+
+}
+
+var Player = function (socket, name) {}
 
 var players = [], p1, p2, isGame = false, p1t, p2t
 
 io.on('connection', function (socket) {
 
   socket.on('join-lobby', function () {
-
     console.log(socket.id, 'has joined lobby')
 
-    io.to(socket.id).emit('id', socket.id)
+    socket.emit('id', socket.id)
 
     players.push(socket.id)
   	io.sockets.emit('players-list', players)
 
-  	//if(isGame === true) socket.broadcast.to(socket.id).emit('new-game', {p1: p1, p2: p2})
+  	// if(isGame === true) socket.emit('new-game', {p1: p1, p2: p2})
 
   	if(isGame === false && players.length >= 2) {
-      console.log('starting new game')
-
-  		isGame = true
-  		p1 = players[0]
-			p2 = players[1]
-			p1t = false
-			p2t = false
-
-			io.sockets.emit('new-game', {p1: p1, p2: p2})
+      newGame(socket)
   	}
 
     socket.on('action', function(move) {
 
-      if(socket.id === p1) {
-        p1t = move
-      }
-      if(socket.id === p2) {
-        p2t = move
-      }
-
-      console.log(move)
+      if(socket.id === p1) p1t = move
+      if(socket.id === p2) p2t = move
 
       if(p1t && p2t) {
         io.sockets.emit('turn', {p1: p1t, p2: p2t})
@@ -60,19 +63,45 @@ io.on('connection', function (socket) {
     })
   })
 
+  socket.on('win', function(winner) {
+
+    //if both players agree on who won, that player wins, else, draw
+    io.sockets.emit('game-end', 'todo')
+  })
+
   socket.on('leave-lobby', function () {
-    players.splice(players.indexOf(socket.id, 0))
-    if(socket.id === p1 || socket.id === p2) isGame = false
-    io.sockets.emit('players-list', players)
-    console.log(socket.id, 'has left lobby')
-    socket.disconnect()
+    leaveLobby(socket)
   })
 
   socket.on('disconnect', function () {
-  	players.splice(players.indexOf(socket.id, 0))
-    if(socket.id === p1 || socket.id === p2) isGame = false
-  	io.sockets.emit('players-list', players)
-    console.log(socket.id, 'has left lobby')
+    leaveLobby(socket)
   })
 
 })
+
+function leaveLobby(socket) {
+  if(players.indexOf(socket.id) !== -1) {
+    players.splice(players.indexOf(socket.id, 0))
+    if(socket.id === p1 || socket.id === p2) gameOver(socket)
+    io.sockets.emit('players-list', players)
+    console.log(socket.id, 'has left lobby')
+  }
+}
+
+function newGame(socket) {
+  console.log('starting new game')
+
+  isGame = true
+  p1 = players[0]
+  p2 = players[1]
+  p1t = false
+  p2t = false
+
+  io.sockets.emit('new-game', {p1: p1, p2: p2})
+}
+
+function gameOver(socket) {
+  console.log('ending game')
+  isGame = false
+  io.sockets.emit('game-over')
+}

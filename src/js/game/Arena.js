@@ -13,8 +13,13 @@ var Arena = function (game) {
 
 	game.physics.startSystem(Phaser.Physics.P2JS)
   game.physics.p2.gravity.y = 800
+
+  game.physics.p2.world.solver.iterations = 100
+
   game.physics.wallMaterial = game.physics.p2.createMaterial('wallMaterial')
   game.physics.p2.setWorldMaterial(game.physics.wallMaterial, true, true, true, true)
+
+  window.o = game.physics.p2
 }
 
 /*

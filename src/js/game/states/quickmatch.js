@@ -60,6 +60,7 @@ module.exports = function(game) {
       warning('you are ' + id)
     })
 
+    // could recycle text objects
     socket.on('players-list', function (playerList) {
       players.forEach(function (p) { p.destroy() })
       players = playerList.map(function(player, i) {

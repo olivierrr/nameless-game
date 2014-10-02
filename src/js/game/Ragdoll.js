@@ -119,7 +119,7 @@ module.exports = function(game, offsetX, offsetY) {
     b: 'upperBody',
     pivot_a: [0, -sizes.headRadius - sizes.neckLength / 2],
     pivot_b: [0, sizes.upperBodyLength / 2],
-    limits: [-Math.PI/2, Math.PI/2]
+    limits: [-Math.PI/10, Math.PI/10]
   }
   // Knees
   bodyJoints.leftKneeJoint = {
@@ -221,8 +221,8 @@ module.exports = function(game, offsetX, offsetY) {
 
     var contactMaterial = game.physics.p2.createContactMaterial(partMaterial, wallMaterial)
 
-    contactMaterial.friction = 200.0         // Friction to use in the contact of these two materials.
-    contactMaterial.restitution = 0.2        // Restitution (i.e. how bouncy it is!) to use in the contact of these two materials.
+    contactMaterial.friction = 100         // Friction to use in the contact of these two materials.
+    contactMaterial.restitution = 0        // Restitution (i.e. how bouncy it is!) to use in the contact of these two materials.
     contactMaterial.stiffness = 1e7          // Stiffness of the resulting ContactEquation that this ContactMaterial generate.
     contactMaterial.relaxation = 3           // Relaxation of the resulting ContactEquation that this ContactMaterial generate.
     contactMaterial.frictionStiffness = 1e7  // Stiffness of the resulting FrictionEquation that this ContactMaterial generate.
@@ -250,7 +250,7 @@ module.exports = function(game, offsetX, offsetY) {
 
     constraint.setLimits(joint.limits[0], joint.limits[1])
 
-    constraint.collideConnected = true
+    constraint.collideConnected = false
 
     constraint.lowerLimitEquation.needsUpdate = true
     constraint.upperLimitEquation.needsUpdate = true 

@@ -14,21 +14,21 @@ app.listen( process.env.PORT || 9000 )
 
 console.log( '***** live on port', (process.env.PORT||9000), '*****' )
 
-var players = {
+// var players = {
 
-  list: [],
-  p1: {
-    name : null,
-    socket: null,
-    turns : []
-  },
-  p2: {
-    name : null,
-    socket: null,
-    turns : []
-  }
+//   list: [],
+//   p1: {
+//     name : null,
+//     socket: null,
+//     turns : []
+//   },
+//   p2: {
+//     name : null,
+//     socket: null,
+//     turns : []
+//   }
 
-}
+// }
 
 var Player = function (socket, name) {}
 

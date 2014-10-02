@@ -1,5 +1,6 @@
 var Player = require('../Player.js')
 var Arena = require('../Arena.js')
+var Button = require('../Button.js')
 
 var socket
 
@@ -28,12 +29,9 @@ module.exports = function(game) {
 
     var arena = new Arena(game)
 
-  	var style = { font: '40px Arial', fill: '#ffffff', align: 'center'}
-  	var mainMenuButton = game.add.text(100, 50, 'back', style)
-    mainMenuButton.anchor.setTo(0.5, 0.5)
-    mainMenuButton.inputEnabled = true
-    mainMenuButton.events.onInputDown.add(function() {
-			game.state.start('multiplayermenu')
+    var backButton = new Button(game, { x: 100, y: 50, text: 'back' },
+    function () {
+      game.state.start('multiplayermenu')
     })
 
     p1 = new Player(game, 200, 200)

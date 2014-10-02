@@ -1,3 +1,5 @@
+var Button = require('../Button.js')
+
 module.exports = function(game) {
 
   var gameState = {}
@@ -11,29 +13,20 @@ module.exports = function(game) {
     var logo = game.add.sprite(game.world.centerX, 200, 'logo')
     logo.anchor.setTo(0.5, 0.5)
 
-    var style = { font: '40px Arial', fill: '#ffffff', align: 'center'}
-
-    var singlePlayerButton = game.add.text(game.world.centerX, 450, 'single player', style)
-    singlePlayerButton.anchor.setTo(0.5, 0.5)
-    singlePlayerButton.inputEnabled = true
-    singlePlayerButton.events.onInputDown.add(function() {
-			game.state.start('singleplayermenu')
+    var a = new Button(game, { x: game.world.centerX, y: 450, text: 'single player' },
+    function () {
+      game.state.start('singleplayermenu')
     })
 
-    var multiPlayerButton = game.add.text(game.world.centerX, 500, 'multi player', style)
-    multiPlayerButton.anchor.setTo(0.5, 0.5)
-    multiPlayerButton.inputEnabled = true
-    multiPlayerButton.events.onInputDown.add(function() {
-			game.state.start('multiplayermenu')
+    var b = new Button(game, { x: game.world.centerX, y: 500, text: 'multi player' },
+    function () {
+      game.state.start('multiplayermenu')
     })
 
-    var settingsButton = game.add.text(game.world.centerX, 550, 'settings', style)
-    settingsButton.anchor.setTo(0.5, 0.5)
-    settingsButton.inputEnabled = true
-    settingsButton.events.onInputDown.add(function() {
-    	game.state.start('settingsmenu')
+    var c = new Button(game, { x: game.world.centerX, y: 550, text: 'settings' },
+    function () {
+      game.state.start('settingsmenu')
     })
-
   }
 
   gameState.update = function() {

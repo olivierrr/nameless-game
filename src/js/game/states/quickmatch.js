@@ -19,6 +19,8 @@ module.exports = function(game) {
   var hasPlayedBack = false
   var isSpacebarLocked = false
 
+  var currentWarning
+
   gameState.preload = function () {
     game.stage.disableVisibilityChange = true
   }
@@ -34,6 +36,17 @@ module.exports = function(game) {
       game.state.start('multiplayermenu')
     })
 
+    function warning (message) {
+      if(!currentWarning) {
+        currentWarning = game.add.text(game.world.centerX, 150, message, { font: '30px Arial', fill: '#ffffff', align: 'center' } )
+        currentWarning.anchor.setTo(0.5, 0.5)
+      }
+      currentWarning._text = message
+      window.setTimeout(function () { 
+        game.add.tween(currentWarning).to( {alpha: 0}, 1000, Phaser.Easing.Linear.None, true)
+      }, 1000)
+    }
+
     p1 = new Player(game, 200, 200)
     p1.method0()
     p2 = new Player(game, 600, 200)
@@ -44,6 +57,7 @@ module.exports = function(game) {
     socket.on('id', function(socketId) {
       console.log('id', socketId)
       id = socketId
+      warning('you are ' + id)
     })
 
     socket.on('players-list', function (playerList) {
@@ -55,13 +69,13 @@ module.exports = function(game) {
     })
 
     socket.on('new-game', function (players) {
-
+      warning('game starting...')
       console.log('new-game', players)
 
       if(players.p1 === id) {
         isP1 = true
         p1.setController('me')
-        console.log('you are p1')
+        warning('you are p1')
       } else {
         isP2 = false
         p1.setController('network')
@@ -70,7 +84,7 @@ module.exports = function(game) {
       if(players.p2 === id) {
         isP2 = true
         p2.setController('me')
-        console.log('you are p2')
+        warning('you are p2')
       } else {
         isP2 = false
         p2.setController('network')
@@ -93,7 +107,7 @@ module.exports = function(game) {
     })
 
     socket.on('game-over', function () {
-      console.log('game-over')
+      warning('game over')
       p1.reset()
       p2.reset()
       p1.method0()

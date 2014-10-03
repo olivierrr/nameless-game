@@ -157,7 +157,7 @@ module.exports = function(game, offsetX, offsetY) {
     b: 'upperBody',
     pivot_a: [0, sizes.pelvisLength / 2],
     pivot_b: [0, -sizes.upperBodyLength / 2],
-    limits: [-Math.PI/8, Math.PI/8]
+    limits: [-Math.PI/12, Math.PI/12]
   }
   // Shoulders
   bodyJoints.leftShoulder = {
@@ -256,7 +256,7 @@ module.exports = function(game, offsetX, offsetY) {
 
     constraint.setLimits(joint.limits[0], joint.limits[1])
 
-    constraint.collideConnected = false
+    //constraint.collideConnected = false
 
     constraint.lowerLimitEquation.needsUpdate = true
     constraint.upperLimitEquation.needsUpdate = true 

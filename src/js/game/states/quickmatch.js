@@ -156,6 +156,7 @@ module.exports = function(game) {
           frameCount = 0
           p1.method2()
           p2.method2()
+          console.log(p1.ragdoll.joints)
         }
       }
 

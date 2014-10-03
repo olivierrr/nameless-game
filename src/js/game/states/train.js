@@ -6,7 +6,7 @@ module.exports = function(game) {
 
   var gameState = {}
 
-  var p1, p2
+  var arena
 
   gameState.preload = function () {
     game.stage.disableVisibilityChange = true
@@ -19,15 +19,14 @@ module.exports = function(game) {
       game.state.start('singleplayermenu')
     })
 
-    var arena = new Arena(game)
+    arena = new Arena(game)
+    arena.createPlayers()
 
-    p1 = new Player(game, 200, 200)
-    p1.setController('me')
-    p1.method0()
+    arena.players['p1'].setController('me')
+    arena.players['p1'].method0()
 
-    p2 = new Player(game, 600, 200)
-    p2.setController('dummy')
-    p2.method0()
+    arena.players['p2'].setController('dummy')
+    arena.players['p2'].method0()
 
     // p1.ragdoll.children.forEach(function (part) {
     //   part.body.onBeginContact.add(function (a, b, c, d, e) {
@@ -37,8 +36,6 @@ module.exports = function(game) {
 
     // debug
     window.game = game
-    window.p1 = p1
-    window.p2 = p2
   }
 
   var frameCount = 0
@@ -48,9 +45,8 @@ module.exports = function(game) {
 
     frameCount++
 
-    if(p1.resetPlayback() || p2.resetPlayback()) {
-      p1.method2()
-      p2.method2()
+    if(arena.players['p1'].resetPlayback() || arena.players['p2'].resetPlayback()) {
+      arena.sameTurn()
       frameCount = 0
     }
 
@@ -58,12 +54,10 @@ module.exports = function(game) {
       frameCount = 0
 
       if(newTurn === true) {
-        p1.method1()
-        p2.method1()
+        arena.newTurn()
         newTurn = false
       } else {
-        p1.method2()
-        p2.method2()
+        arena.sameTurn()
       }
     }
 
@@ -73,8 +67,7 @@ module.exports = function(game) {
   }
 
   gameState.shutdown = function () {
-    p1.destroy()
-    p2.destroy()
+    arena.destroy()
     game.physics.destroy()
   }
 

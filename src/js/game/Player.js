@@ -108,9 +108,20 @@ Player.prototype.savePosition = function () {
       vx: data.velocity[0],
       vy: data.velocity[1],
       angle: data.angle,
-      angularVelocity: data.angularVelocity
+      angularVelocity: data.angularVelocity,
+      wlambda: data.wlambda,
+      vlambdax : data.vlambda[0],
+      vlambday : data.vlambda[1]
     }
   })
+  // var self = this
+  // var joints = Object.keys(this.ragdoll.joints).map(function (key) {
+  //   return self.ragdoll.joints[key].angle
+  // })
+
+  // this.currentPosition.push(joints)
+
+  // console.log(this.ragdoll.joints['rightHipJoint'].angle, '!!!!!')
 }
 
 /**
@@ -128,8 +139,25 @@ Player.prototype.loadPosition = function () {
     data.angle = pos[i].angle,
     data.angularVelocity = pos[i].angularVelocity,
     data.velocity[0] = pos[i].vx,
-    data.velocity[1] = pos[i].vy
+    data.velocity[1] = pos[i].vy,
+    data.wlambda = pos[i].wlambda,
+    data.vlambda[0] = pos[i].vlambdax,
+    data.vlambda[1] = pos[i].vlambday
   })
+
+  // //console.log(this.ragdoll.joints['rightHipJoint'].angle)
+  // var self = this
+  // var joints = this.currentPosition[this.currentPosition.length-1]
+  // //console.log(joints)
+  // Object.keys(this.ragdoll.joints).forEach(function (key, i) {
+  //   self.ragdoll.joints[key].angle = joints[i]
+  // })
+
+  //console.log(this.ragdoll.joints['rightHipJoint'].angle)
+  if(this.controller === 'me'){
+    //console.log(this.ragdoll.children[0].body.data)
+    
+  }
 }
 
 /**
@@ -150,6 +178,7 @@ Player.prototype.clone = function () {
     clone.anchor.y = part.anchor.y
     clone.name = part.name
   })
+
   return ragdollClone
 }
 
@@ -276,6 +305,9 @@ function muscleClick (muscleName) {
 
   if(this.isAllowingInput === false) return
 
+  //if(muscleName === 'upperBody') return
+  //if(muscleName === 'pelvis') return
+
   joint = {
     'head'         : 'neckJoint',
     'upperLeftArm' : 'leftShoulder',
@@ -350,8 +382,9 @@ Player.prototype.method1 = function () {
 }
 // -todo
 Player.prototype.method2 = function () {
-	this.loadPosition()
   this.ragdoll.relaxAll()
+	this.loadPosition()
+  
   this.executeMoves(this.getLastTurn(), 0.5)
 }
 

@@ -134,20 +134,18 @@ module.exports = function(game) {
       }
 
       if(frameCount === 1 && newTurn === true) {
-        p1.cinematicExecuteMoves()
-        p2.cinematicExecuteMoves()
+        arena.cinematicPlayback()
         hasPlayedBack = true
-      } 
+      }
 
       if(frameCount === 100) {
-
-        if(newTurn && hasPlayedBack) {
+        frameCount = 0
+        
+        if(newTurn === true && hasPlayedBack === true) {
           arena.newTurn()
           newTurn = false
           hasPlayedBack = false
-          frameCount = 0
         } else {
-          frameCount = 0
           arena.sameTurn()
         }
       }

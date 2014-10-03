@@ -63,12 +63,12 @@ Arena.prototype.resetPlayers = function () {
  * @method
  */
 Arena.prototype.setControllers = function (p1, p2) {
-	this.players['p1'].setController(p1)
-	this.players['p2'].setController(p2)
+	this.players['p1'].setController(p1 || 'dummy')
+	this.players['p2'].setController(p2 || 'dummy')
 }
 
 /*
- * multi purpose itterator
+ * multi purpose player iterator
  *
  * @method
  */
@@ -92,6 +92,15 @@ Arena.prototype.newTurn = function () {
 Arena.prototype.sameTurn = function () {
 	this.forEachPlayer(function (p) {
 		p.method2()
+	})
+}
+
+/*
+ * @method
+ */
+Arena.prototype.cinematicPlayback = function () {
+	this.forEachPlayer(function (p) {
+		p.cinematicExecuteMoves()
 	})
 }
 

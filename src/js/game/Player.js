@@ -229,10 +229,10 @@ Player.prototype.destroyShadow = function() {
  */
 Player.prototype.executeMove = function (jointName, type) {
   switch (type) {
-    case 'expand'  : this.ragdoll.flex(jointName)     ;break 
-    case 'contract': this.ragdoll.contract(jointName) ;break 
-    case 'relax'   : this.ragdoll.relax(jointName)    ;break 
-    case 'tense'   : this.ragdoll.tense(jointName)    ;break 
+    case 'expand'  : this.ragdoll.flex(jointName)     ;break
+    case 'contract': this.ragdoll.contract(jointName) ;break
+    case 'relax'   : this.ragdoll.relax(jointName)    ;break
+    case 'tense'   : this.ragdoll.tense(jointName)    ;break
   }
 }
 

@@ -28,6 +28,7 @@ module.exports = function(game) {
 
   var frameCount = 0
   var newTurn = false
+  var hasPlayedBack = false
 
   gameState.update = function () {
 
@@ -38,12 +39,18 @@ module.exports = function(game) {
       arena.sameTurn()
     }
 
+    if(frameCount === 1 && newTurn === true) {
+      arena.cinematicPlayback()
+      hasPlayedBack = true
+    }
+
     if(frameCount === 100) {
       frameCount = 0
 
-      if(newTurn === true) {
+      if(newTurn === true && hasPlayedBack === true) {
         arena.newTurn()
         newTurn = false
+        hasPlayedBack = false
       } else {
         arena.sameTurn()
       }

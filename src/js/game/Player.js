@@ -266,6 +266,19 @@ Player.prototype.resetPlayback = function () {
 }
 
 /**
+ * shim p2.onBeginContact to work on Phaser.group @ragdoll
+ *
+ * @method onCollision
+ */
+Player.prototype.onCollision = function (cb) {
+  this.ragdoll.children.forEach(function (part) {
+    part.body.onBeginContact.add(function (a, b, c, d) {
+      cb(a, b, c, d)
+    })
+  })
+}
+
+/**
  * reset back to initial instance position
  *
  * @method reset
@@ -365,13 +378,6 @@ Player.prototype.setController = function(controller) {
   }
 }
 
-// -todo
-Player.prototype.method0 = function () {
-  this.ragdoll.alpha = 0.5
-  this.newTurn()
-  this.savePosition()
-  this.shadow()
-}
 // -todo
 Player.prototype.method1 = function () {
   this.ragdoll.alpha = 0.5

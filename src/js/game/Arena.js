@@ -54,7 +54,17 @@ Arena.prototype.createPlayers = function () {
  * @method
  */
 Arena.prototype.resetPlayers = function () {
+	this.forEachPlayer(function (p) {
+		p.reset()
+	})
+}
 
+/*
+ * @method
+ */
+Arena.prototype.setControllers = function (p1, p2) {
+	this.players['p1'].setController(p1)
+	this.players['p2'].setController(p2)
 }
 
 /*
@@ -92,6 +102,7 @@ Arena.prototype.destroy = function () {
 	this.forEachPlayer(function (p) { 
 		p.destroy() 
 	})
+	this.game.physics.destroy()
 }
 
 module.exports = Arena

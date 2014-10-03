@@ -14,6 +14,7 @@ module.exports = function(game) {
 
   gameState.create = function () {
 
+    // back button
     var backButton = new Button(game, { x: 100, y: 50, text: 'back' },
     function () {
       game.state.start('singleplayermenu')
@@ -21,21 +22,8 @@ module.exports = function(game) {
 
     arena = new Arena(game)
     arena.createPlayers()
-
-    arena.players['p1'].setController('me')
-    arena.players['p1'].method0()
-
-    arena.players['p2'].setController('dummy')
-    arena.players['p2'].method0()
-
-    // p1.ragdoll.children.forEach(function (part) {
-    //   part.body.onBeginContact.add(function (a, b, c, d, e) {
-    //     console.log(b)
-    //   })
-    // })
-
-    // debug
-    window.game = game
+    arena.setControllers('me', 'dummy')
+    arena.newTurn()
   }
 
   var frameCount = 0
@@ -46,8 +34,8 @@ module.exports = function(game) {
     frameCount++
 
     if(arena.players['p1'].resetPlayback() || arena.players['p2'].resetPlayback()) {
-      arena.sameTurn()
       frameCount = 0
+      arena.sameTurn()
     }
 
     if(frameCount === 100) {
@@ -68,7 +56,6 @@ module.exports = function(game) {
 
   gameState.shutdown = function () {
     arena.destroy()
-    game.physics.destroy()
   }
 
   return gameState

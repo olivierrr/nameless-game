@@ -253,6 +253,14 @@ Player.prototype.executeMoves = function (turn, alpha) {
 }
 
 /**
+ * @method cinematicExecuteMoves
+ */
+Player.prototype.cinematicExecuteMoves = function () {
+  this.destroyShadow()
+  this.executeMoves(this.getLastTurn(), 1)
+}
+
+/**
  * works like nodes EventEmitter.once for @property isResetingPlayback
  *
  * @method resetPlayback

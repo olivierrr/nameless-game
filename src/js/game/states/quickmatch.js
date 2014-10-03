@@ -21,6 +21,8 @@ module.exports = function(game) {
 
   var currentWarning
 
+  var arena
+
   gameState.preload = function () {
     game.stage.disableVisibilityChange = true
   }
@@ -29,7 +31,12 @@ module.exports = function(game) {
 
     socket = io('http://localhost:9000')
 
-    var arena = new Arena(game)
+    arena = new Arena(game)
+    arena.createPlayers()
+    arena.newTurn()
+
+    p1 = arena.players['p1']
+    p2 = arena.players['p2']
 
     var backButton = new Button(game, { x: 100, y: 50, text: 'back' },
     function () {
@@ -47,10 +54,7 @@ module.exports = function(game) {
       }, 1000)
     }
 
-    p1 = new Player(game, 200, 200)
-    p1.method0()
-    p2 = new Player(game, 600, 200)
-    p2.method0()
+    //
 
     socket.emit('join-lobby')
 
@@ -90,10 +94,8 @@ module.exports = function(game) {
         p2.setController('network')
       }
 
-      p1.reset()
-      p2.reset()
-      p1.method0()
-      p2.method0()
+      arena.resetPlayers()
+      arena.newTurn()
 
       socket.on('turn', function (turn) {
         frameCount = 0
@@ -108,10 +110,8 @@ module.exports = function(game) {
 
     socket.on('game-over', function () {
       warning('game over')
-      p1.reset()
-      p2.reset()
-      p1.method0()
-      p2.method0()
+      arena.resetPlayers()
+      arena.newTurn()
     })
 
     // debug
@@ -129,34 +129,26 @@ module.exports = function(game) {
       frameCount++
 
       if(p1.resetPlayback() || p2.resetPlayback()) {
-        p1.method2()
-        p2.method2()
+        arena.sameTurn()
         frameCount = 0
       }
 
       if(frameCount === 1 && newTurn === true) {
-        p1.destroyShadow()
-        p2.destroyShadow()
-        p1.executeMoves(p1.getLastTurn(), 1)
-        p2.executeMoves(p2.getLastTurn(), 1)
+        p1.cinematicExecuteMoves()
+        p2.cinematicExecuteMoves()
         hasPlayedBack = true
       } 
 
       if(frameCount === 100) {
 
         if(newTurn && hasPlayedBack) {
-          p1.method1()
-          p2.method1()
+          arena.newTurn()
           newTurn = false
           hasPlayedBack = false
           frameCount = 0
-          console.log('method1')
         } else {
-          console.log('method2')
           frameCount = 0
-          p1.method2()
-          p2.method2()
-          console.log(p1.ragdoll.joints)
+          arena.sameTurn()
         }
       }
 
@@ -174,9 +166,7 @@ module.exports = function(game) {
 
   gameState.shutdown = function () {
     socket.emit('leave-lobby')
-    p1.destroy()
-    p2.destroy()
-    game.physics.destroy()
+    arena.destroy()
   }
 
   return gameState

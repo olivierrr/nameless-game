@@ -98,13 +98,13 @@ module.exports = function(game) {
       arena.newTurn()
 
       socket.on('turn', function (turn) {
-        frameCount = 0
+        // frameCount = 0
         p1.setLastTurn(turn.p1)
         p2.setLastTurn(turn.p2)
-        p1.loadPosition()
-        p2.loadPosition()
+        // p1.loadPosition()
+        // p2.loadPosition()
         newTurn = true
-        isSpacebarLocked = false
+        console.log(turn)
       })
     })
 
@@ -140,11 +140,12 @@ module.exports = function(game) {
 
       if(frameCount === 100) {
         frameCount = 0
-        
+
         if(newTurn === true && hasPlayedBack === true) {
           arena.newTurn()
           newTurn = false
           hasPlayedBack = false
+          isSpacebarLocked = false
         } else {
           arena.sameTurn()
         }
@@ -152,9 +153,11 @@ module.exports = function(game) {
 
       if(game.input.keyboard.justPressed(Phaser.Keyboard.SPACEBAR)) {
         if(isP1 || isP2) {
-          if(!isSpacebarLocked) {
+          if(isSpacebarLocked === false) {
+            console.log('SPACEBAR')
             var p = isP1 ? p1 : p2
             socket.emit('action', p.getLastTurn())
+            console.log(p.getLastTurn())
             isSpacebarLocked = true
           }
         }

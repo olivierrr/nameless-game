@@ -114,14 +114,6 @@ Player.prototype.savePosition = function () {
       vlambday : data.vlambda[1]
     }
   })
-  // var self = this
-  // var joints = Object.keys(this.ragdoll.joints).map(function (key) {
-  //   return self.ragdoll.joints[key].angle
-  // })
-
-  // this.currentPosition.push(joints)
-
-  // console.log(this.ragdoll.joints['rightHipJoint'].angle, '!!!!!')
 }
 
 /**
@@ -144,20 +136,6 @@ Player.prototype.loadPosition = function () {
     data.vlambda[0] = pos[i].vlambdax,
     data.vlambda[1] = pos[i].vlambday
   })
-
-  // //console.log(this.ragdoll.joints['rightHipJoint'].angle)
-  // var self = this
-  // var joints = this.currentPosition[this.currentPosition.length-1]
-  // //console.log(joints)
-  // Object.keys(this.ragdoll.joints).forEach(function (key, i) {
-  //   self.ragdoll.joints[key].angle = joints[i]
-  // })
-
-  //console.log(this.ragdoll.joints['rightHipJoint'].angle)
-  if(this.controller === 'me'){
-    //console.log(this.ragdoll.children[0].body.data)
-    
-  }
 }
 
 /**
@@ -295,7 +273,7 @@ Player.prototype.reset = function() {
   this.turnHistory = []
   this.currentPosition = this.initialPosition
   this.loadPosition()
-  this.shadow()
+  this.destroyShadow()
 }
 
 /**
@@ -396,8 +374,9 @@ Player.prototype.method1 = function () {
 }
 // -todo
 Player.prototype.method2 = function () {
-  this.ragdoll.relaxAll()
+  
 	this.loadPosition()
+  this.ragdoll.relaxAll()
   
   this.executeMoves(this.getLastTurn(), 0.5)
 }

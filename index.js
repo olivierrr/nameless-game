@@ -55,10 +55,13 @@ io.on('connection', function (socket) {
       if(socket.id === p1) p1t = move
       if(socket.id === p2) p2t = move
 
+      console.log('p1', p1t)
+      console.log('p2', p2t)
+
       if(p1t && p2t) {
         io.sockets.emit('turn', {p1: p1t, p2: p2t})
-        p1t = false
-        p2t = false
+        p1t = {}
+        p2t = {}
       }
     })
   })
@@ -88,14 +91,31 @@ function leaveLobby(socket) {
   }
 }
 
+var tick = 1
+
 function newGame(socket) {
   console.log('starting new game')
+
+  // setInterval(function () {
+  //   console.log('tick')
+
+  //   var t
+  //   if(tick === 1) {
+  //     t = {rightShoulder: 'expand', leftShoulder: 'contract' }
+  //     tick = 0
+  //   } else {
+  //     t = {rightShoulder: 'contract', leftShoulder: 'expand' }
+  //     tick = 1
+  //   }
+
+  //   io.sockets.emit('turn', {p1: t, p2: {}})
+  // }, 10000)
 
   isGame = true
   p1 = players[0]
   p2 = players[1]
-  p1t = false
-  p2t = false
+  p1t = {}
+  p2t = {}
 
   io.sockets.emit('new-game', {p1: p1, p2: p2})
 }

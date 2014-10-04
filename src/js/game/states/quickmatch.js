@@ -98,11 +98,11 @@ module.exports = function(game) {
       arena.newTurn()
 
       socket.on('turn', function (turn) {
-        // frameCount = 0
+        frameCount = 0
         p1.setLastTurn(turn.p1)
         p2.setLastTurn(turn.p2)
-        // p1.loadPosition()
-        // p2.loadPosition()
+        p1.loadPosition()
+        p2.loadPosition()
         newTurn = true
         console.log(turn)
       })

@@ -30,7 +30,9 @@ Arena.prototype.init = function() {
 	this.game.physics.startSystem(Phaser.Physics.P2JS)
 
   this.game.physics.p2.gravity.y = 800
+
   this.game.physics.p2.world.solver.iterations = 1000
+  this.game.physics.p2.world.solver.frictionIterations = 1000
 
   this.game.physics.wallMaterial = this.game.physics.p2.createMaterial('wallMaterial')
   this.game.physics.p2.setWorldMaterial(this.game.physics.wallMaterial, true, true, true, true)

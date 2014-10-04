@@ -109,7 +109,7 @@ function newGame(socket) {
   //   }
 
   //   io.sockets.emit('turn', {p1: t, p2: {}})
-  // }, 10000)
+  // }, 20000)
 
   isGame = true
   p1 = players[0]
